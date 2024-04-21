@@ -3,12 +3,13 @@ import 'package:asesmen_ners/Services/Api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'StudentPage.dart';
 
 
 class CoursePage extends StatefulWidget {
+  const CoursePage({super.key});
+
   @override
   _CoursePageState createState() => _CoursePageState();
 }
@@ -24,7 +25,7 @@ class _CoursePageState extends State<CoursePage> {
   }
   
   _loadUserToken() async{
-    final storage = FlutterSecureStorage();
+    const storage = FlutterSecureStorage();
     final accessToken = await storage.read(key: 'access_token');
     return accessToken;
   }
@@ -51,9 +52,9 @@ class _CoursePageState extends State<CoursePage> {
       print(res['data']);
       final List<dynamic> data = res['data'];
       List<String> courses = [];
-      data.forEach((course) {
+      for (var course in data) {
         courses.add(course['nama_mata_kuliah']);
-      });
+      }
       return courses;
     } else {
       throw Exception('Failed to load courses');
@@ -64,15 +65,15 @@ class _CoursePageState extends State<CoursePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Pilih Mata Kuliah'),
+        title: const Text('Pilih Mata Kuliah'),
       ),
       body: Container( 
-        padding: EdgeInsets.all(20.0), 
+        padding: const EdgeInsets.all(20.0), 
         child:FutureBuilder<List<String>>(
         future: _coursesFuture,
         builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else {
@@ -96,7 +97,7 @@ class _CoursePageState extends State<CoursePage> {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => StudentPage()),
+            MaterialPageRoute(builder: (context) => const StudentPage()),
           );
         },
         child: Padding(

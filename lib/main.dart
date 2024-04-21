@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'LoginPage.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 
@@ -85,9 +85,9 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     Widget child;
     if(isAuth){
-      child = LandingPage();
+      child = const LandingPage();
     } else{
-      child = LoginPage();
+      child = const LoginPage();
     }
 
     return Scaffold(

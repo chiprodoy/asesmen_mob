@@ -1,16 +1,23 @@
 import 'package:asesmen_ners/AsesmenPage.dart';
 import 'package:flutter/material.dart';
 
-class StudentPage extends StatelessWidget {
+class StudentPage extends StatefulWidget {
+  const StudentPage({super.key});
+
+  @override
+  _StudentPageState createState() => _StudentPageState();
+}
+
+class _StudentPageState extends State<StudentPage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Mahasiswa'),
-          actions: [
+          title: const Text('Mahasiswa'),
+          actions: const [
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: EdgeInsets.all(8.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -28,15 +35,15 @@ class StudentPage extends StatelessWidget {
           ],
         ),
         body: Container(
-          padding: EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'Pilih Mahasiswa',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Expanded(
                 child: ListView(
                   children: [
@@ -58,7 +65,7 @@ class StudentPage extends StatelessWidget {
   Widget _buildStudentTile(String studentName, BuildContext context) {
     return Card(
       elevation: 5,
-      margin: EdgeInsets.symmetric(vertical: 10),
+      margin: const EdgeInsets.symmetric(vertical: 10),
       child: InkWell(
         onTap: () {
           Navigator.push(
@@ -67,14 +74,14 @@ class StudentPage extends StatelessWidget {
           );
         },
         child: Padding(
-          padding: EdgeInsets.all(15),
+          padding: const EdgeInsets.all(15),
           child: Row(
             children: [
-              Icon(Icons.person),
-              SizedBox(width: 10),
+              const Icon(Icons.person),
+              const SizedBox(width: 10),
               Text(
                 studentName,
-                style: TextStyle(fontSize: 18),
+                style: const TextStyle(fontSize: 18),
               ),
             ],
           ),

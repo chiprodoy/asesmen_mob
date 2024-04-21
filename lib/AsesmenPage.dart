@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class AsesmenPage extends StatelessWidget {
   final String studentName;
 
-  AsesmenPage(this.studentName);
+  const AsesmenPage(this.studentName, {super.key});
 
   @override
   Widget build(BuildContext context) {

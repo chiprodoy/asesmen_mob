@@ -2,6 +2,8 @@ import 'package:asesmen_ners/CoursePage.dart';
 import 'package:flutter/material.dart';
 
 class LandingPage extends StatelessWidget {
+  const LandingPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -17,8 +19,8 @@ class LandingPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.all(20.0),
+              const Padding(
+                padding: EdgeInsets.all(20.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -46,7 +48,7 @@ class LandingPage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => CoursePage(),
+                            builder: (context) => const CoursePage(),
                           ),
                         );
                       }),
@@ -55,7 +57,7 @@ class LandingPage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => CoursePage(),
+                            builder: (context) => const CoursePage(),
                           ),
                         );
                       }),
@@ -64,7 +66,7 @@ class LandingPage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ImportMahasiswaPage(),
+                            builder: (context) => const ImportMahasiswaPage(),
                           ),
                         );
                       }),
@@ -91,10 +93,10 @@ class LandingPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon, size: 50),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
               title,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -105,13 +107,15 @@ class LandingPage extends StatelessWidget {
 
 
 class ImportMahasiswaPage extends StatelessWidget {
+  const ImportMahasiswaPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Import Mahasiswa Page'),
+        title: const Text('Import Mahasiswa Page'),
       ),
-      body: Center(
+      body: const Center(
         child: Text('This is the Import Mahasiswa Page'),
       ),
     );

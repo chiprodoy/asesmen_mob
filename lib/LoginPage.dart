@@ -5,9 +5,10 @@ import 'package:asesmen_ners/LandingPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatelessWidget {
+  const LoginPage({super.key});
+
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +22,7 @@ class LoginPage extends StatelessWidget {
               colors: [Colors.blue[400]!, Colors.blue[900]!],
             ),
           ),
-          child: Center(
+          child: const Center(
             child: LoginForm(),
           ),
         ),
@@ -31,12 +32,14 @@ class LoginPage extends StatelessWidget {
 }
 
 class LoginForm extends StatefulWidget {
+  const LoginForm({super.key});
+
   @override
   _LoginFormState createState() => _LoginFormState();
 }
 
 class _LoginFormState extends State<LoginForm> {
-  bool _isLoading = false;
+  final bool _isLoading = false;
   final _formKey = GlobalKey<FormState>();
   String email ='';
   String password='';
@@ -159,7 +162,7 @@ class _LoginFormState extends State<LoginForm> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => LandingPage()),
+                                builder: (context) => const LandingPage()),
                             );                           
                           }else{
                               ScaffoldMessenger.of(context).showSnackBar(
