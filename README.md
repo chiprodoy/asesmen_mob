@@ -4,6 +4,7 @@ A new Flutter project.
 
 ## Getting Started
 
+adb connect 127.0.0.1:62001
 This project is a starting point for a Flutter application.
 
 A few resources to get you started if this is your first Flutter project:
