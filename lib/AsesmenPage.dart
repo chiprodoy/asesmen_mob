@@ -71,8 +71,6 @@ class _AsesmenPageState extends State<AsesmenPage> {
               child: Column(children: [
                 DropdownButton(
                   items: _studentDatas.map((item) {
-                    print('item');
-                    print(item['id'].toString());
                     return DropdownMenuItem(
                       value: item['id'].toString(),
                       child: Text('${item['npm']} - ${item['nama']}'),
