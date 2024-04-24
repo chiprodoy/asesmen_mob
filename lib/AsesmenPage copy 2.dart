@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:asesmen_ners/AsesmenPage.dart';
 import 'package:asesmen_ners/Services/Api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -7,21 +6,22 @@ import 'package:http/http.dart' as http;
 
 import 'StudentPage.dart';
 
-class CoursePage extends StatefulWidget {
-  const CoursePage({super.key});
+class AsesmenPage extends StatefulWidget {
+  final String matakuliahUUID = '';
+  const AsesmenPage({super.key, matakuliahUUID});
 
   @override
-  _CoursePageState createState() => _CoursePageState();
+  _AsesmenPageState createState() => _AsesmenPageState();
 }
 
-class _CoursePageState extends State<CoursePage> {
-  late Future<List<String>> _coursesFuture;
+class _AsesmenPageState extends State<AsesmenPage> {
+  late Future<List<String>> _asesmensFuture;
   var token = '';
 
   @override
   void initState() {
     super.initState();
-    _coursesFuture = fetchCourses();
+    _asesmensFuture = fetchAsesmens();
   }
 
   _loadUserToken() async {
@@ -30,7 +30,7 @@ class _CoursePageState extends State<CoursePage> {
     return accessToken;
   }
 
-  Future<List<String>> fetchCourses() async {
+  Future<List<String>> fetchAsesmens() async {
     final token = await _loadUserToken(); // Mendapatkan token
     // Header untuk permintaan HTTP
     Map<String, String> headers = {
@@ -38,21 +38,21 @@ class _CoursePageState extends State<CoursePage> {
       'Accept': 'application/json',
       'Authorization': 'Bearer $token',
     };
-    // print(headers);
+    print(headers);
     final response =
-        await http.get(Uri.parse('${Api.host}/matakuliah'), headers: headers);
+        await http.get(Uri.parse('${Api.host}/asesmen'), headers: headers);
 
     if (response.statusCode == 200) {
       var res = json.decode(response.body);
-      // print(res['data']);
+      print(res['data']);
       final List<dynamic> data = res['data'];
-      List<String> courses = [];
-      for (var course in data) {
-        courses.add(course['nama_mata_kuliah']);
+      List<String> Asesmens = [];
+      for (var Asesmen in data) {
+        Asesmens.add(Asesmen['nama_mata_kuliah']);
       }
-      return courses;
+      return Asesmens;
     } else {
-      throw Exception('Failed to load courses');
+      throw Exception('Failed to load Asesmens');
     }
   }
 
@@ -65,7 +65,7 @@ class _CoursePageState extends State<CoursePage> {
         body: Container(
           padding: const EdgeInsets.all(20.0),
           child: FutureBuilder<List<String>>(
-            future: _coursesFuture,
+            future: _asesmensFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
@@ -75,8 +75,8 @@ class _CoursePageState extends State<CoursePage> {
                 return ListView.builder(
                   itemCount: snapshot.data!.length,
                   itemBuilder: (context, index) {
-                    print(snapshot.data);
-                    return _buildCourseCard(snapshot.data![index], '', context);
+                    return _buildAsesmenCard(
+                        snapshot.data![index], '', context);
                   },
                 );
               }
@@ -85,7 +85,7 @@ class _CoursePageState extends State<CoursePage> {
         ));
   }
 
-  Widget _buildCourseCard(
+  Widget _buildAsesmenCard(
       String title, String description, BuildContext context) {
     return Card(
       elevation: 5,
@@ -94,7 +94,7 @@ class _CoursePageState extends State<CoursePage> {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const AsesmenPage()),
+            MaterialPageRoute(builder: (context) => const StudentPage()),
           );
         },
         child: Padding(
