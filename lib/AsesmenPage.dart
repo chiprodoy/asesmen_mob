@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:asesmen_ners/Model/Asesmen.dart';
 import 'package:asesmen_ners/Services/Api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -11,23 +12,76 @@ class AsesmenPage extends StatefulWidget {
   const AsesmenPage(matakuliahUUID, {super.key});
 
   @override
-  _AsesmenPageState createState() => _AsesmenPageState();
+  _AsesmenPageState createState() => _AsesmenPageState(matakuliahUUID);
 }
 
 class _AsesmenPageState extends State<AsesmenPage> {
-  late Future<List<String>> _asesmensFuture;
+  String courseUUID;
+  _AsesmenPageState(this.courseUUID);
+  late Future<List<Asesmen>> _asesmensFuture;
   var token = '';
 
-  @override
-  void initState() {
-    super.initState();
-    _asesmensFuture = fetchAsesmens();
+  Future<List<Asesmen>> getAsesmens(courseUUId) async {
+    final token = await _loadUserToken(); // Mendapatkan token
+    // Header untuk permintaan HTTP
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+    // print(headers);
+    final response = await http
+        .get(Uri.parse('${Api.host}/asesmen/$courseUUId'), headers: headers);
+
+    if (response.statusCode == 200) {
+      var res = json.decode(response.body);
+      print(res['data']);
+      final List data = res['data'];
+      return data.map((e) => Asesmen.fromJson(e)).toList();
+    } else {
+      throw Exception('Failed to load courses');
+    }
   }
 
   _loadUserToken() async {
     const storage = FlutterSecureStorage();
     final accessToken = await storage.read(key: 'access_token');
     return accessToken;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _asesmensFuture = getAsesmens(courseUUID);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text('Pilih Asesmen'),
+        ),
+        body: Container(
+          padding: const EdgeInsets.all(20.0),
+          child: FutureBuilder<List<String>>(
+            future: _asesmensFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else {
+                return ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    return _buildAsesmenCard(
+                        snapshot.data![index], '', context);
+                  },
+                );
+              }
+            },
+          ),
+        ));
   }
 
   Future<List<String>> fetchAsesmens() async {
@@ -54,35 +108,6 @@ class _AsesmenPageState extends State<AsesmenPage> {
     } else {
       throw Exception('Failed to load Asesmens');
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('Pilih Mata Kuliah'),
-        ),
-        body: Container(
-          padding: const EdgeInsets.all(20.0),
-          child: FutureBuilder<List<String>>(
-            future: _asesmensFuture,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              } else {
-                return ListView.builder(
-                  itemCount: snapshot.data!.length,
-                  itemBuilder: (context, index) {
-                    return _buildAsesmenCard(
-                        snapshot.data![index], '', context);
-                  },
-                );
-              }
-            },
-          ),
-        ));
   }
 
   Widget _buildAsesmenCard(

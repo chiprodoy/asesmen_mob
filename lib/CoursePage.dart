@@ -1,11 +1,10 @@
 import 'dart:convert';
 import 'package:asesmen_ners/AsesmenPage.dart';
+import 'package:asesmen_ners/Model/Course.dart';
 import 'package:asesmen_ners/Services/Api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
-
-import 'StudentPage.dart';
 
 class CoursePage extends StatefulWidget {
   const CoursePage({super.key});
@@ -15,22 +14,10 @@ class CoursePage extends StatefulWidget {
 }
 
 class _CoursePageState extends State<CoursePage> {
-  late Future<List<String>> _coursesFuture;
+  Future<List<Course>> _coursesFuture = getCourses();
   var token = '';
 
-  @override
-  void initState() {
-    super.initState();
-    _coursesFuture = fetchCourses();
-  }
-
-  _loadUserToken() async {
-    const storage = FlutterSecureStorage();
-    final accessToken = await storage.read(key: 'access_token');
-    return accessToken;
-  }
-
-  Future<List<String>> fetchCourses() async {
+  static Future<List<Course>> getCourses() async {
     final token = await _loadUserToken(); // Mendapatkan token
     // Header untuk permintaan HTTP
     Map<String, String> headers = {
@@ -44,16 +31,18 @@ class _CoursePageState extends State<CoursePage> {
 
     if (response.statusCode == 200) {
       var res = json.decode(response.body);
-      // print(res['data']);
-      final List<dynamic> data = res['data'];
-      List<String> courses = [];
-      for (var course in data) {
-        courses.add(course['nama_mata_kuliah']);
-      }
-      return courses;
+      print(res['data']);
+      final List data = res['data'];
+      return data.map((e) => Course.fromJson(e)).toList();
     } else {
       throw Exception('Failed to load courses');
     }
+  }
+
+  static _loadUserToken() async {
+    const storage = FlutterSecureStorage();
+    final accessToken = await storage.read(key: 'access_token');
+    return accessToken;
   }
 
   @override
@@ -64,55 +53,42 @@ class _CoursePageState extends State<CoursePage> {
         ),
         body: Container(
           padding: const EdgeInsets.all(20.0),
-          child: FutureBuilder<List<String>>(
+          child: FutureBuilder<List<Course>>(
             future: _coursesFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
+                return const CircularProgressIndicator();
+              } else if (snapshot.hasData) {
+                final courses = snapshot.data!;
+                return buildCourseListView(courses);
               } else {
-                return ListView.builder(
-                  itemCount: snapshot.data!.length,
-                  itemBuilder: (context, index) {
-                    print(snapshot.data);
-                    return _buildCourseCard(snapshot.data![index], '', context);
-                  },
-                );
+                return const Text("No data available");
               }
             },
           ),
         ));
   }
 
-  Widget _buildCourseCard(
-      String title, String description, BuildContext context) {
-    return Card(
-      elevation: 5,
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const AsesmenPage()),
-          );
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(15),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-              Text(description),
-            ],
-          ),
-        ),
-      ),
+  Widget buildCourseListView(List<Course> courses) {
+    return ListView.separated(
+      itemCount: courses.length,
+      itemBuilder: (context, index) {
+        final course = courses[index];
+        return ListTile(
+          title: Text(course.namaMataKuliah!),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => AsesmenPage(courses[index].uuid)),
+            );
+          }, // Handle your onTap here.
+        );
+      },
+      separatorBuilder: (context, index) {
+        // <-- SEE HERE
+        return const Divider();
+      },
     );
   }
 }
