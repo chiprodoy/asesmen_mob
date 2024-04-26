@@ -70,7 +70,7 @@ class _StudentPageState extends State<StudentPage> {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => AsesmenPage(studentName)),
+            MaterialPageRoute(builder: (context) => StudentPage()),
           );
         },
         child: Padding(
@@ -90,5 +90,3 @@ class _StudentPageState extends State<StudentPage> {
     );
   }
 }
-
-

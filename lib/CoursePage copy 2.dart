@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:asesmen_ners/Model/Asesmen.dart';
+import 'package:asesmen_ners/AsesmenPage.dart';
 import 'package:asesmen_ners/Services/Api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -7,42 +7,21 @@ import 'package:http/http.dart' as http;
 
 import 'StudentPage.dart';
 
-class AsesmenPage extends StatefulWidget {
-  final String? matakuliahUUID;
-  const AsesmenPage(this.matakuliahUUID);
+class CoursePage extends StatefulWidget {
+  const CoursePage({super.key});
 
   @override
-  _AsesmenPageState createState() => _AsesmenPageState();
+  _CoursePageState createState() => _CoursePageState();
 }
 
-class _AsesmenPageState extends State<AsesmenPage> {
-  late Future<List<Asesmen>> _asesmensFuture;
+class _CoursePageState extends State<CoursePage> {
+  late Future<List<String>> _coursesFuture;
   var token = '';
 
-  Future<List<Asesmen>> getAsesmens(courseUUId) async {
-    final token = await _loadUserToken(); // Mendapatkan token
-    // Header untuk permintaan HTTP
-    Map<String, String> headers = {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': 'Bearer $token',
-    };
-    // print(headers);
-    print('cuuid: ' + widget.matakuliahUUID!);
-    print('${Api.host}/asesmen/${widget.matakuliahUUID}');
-
-    final response = await http.get(
-        Uri.parse('${Api.host}/asesmen/${widget.matakuliahUUID}'),
-        headers: headers);
-
-    if (response.statusCode == 200) {
-      var res = json.decode(response.body);
-      print(res['data']);
-      final List data = res['data'];
-      return data.map((e) => Asesmen.fromJson(e)).toList();
-    } else {
-      throw Exception('Failed to load asesmen');
-    }
+  @override
+  void initState() {
+    super.initState();
+    _coursesFuture = fetchCourses();
   }
 
   _loadUserToken() async {
@@ -51,48 +30,62 @@ class _AsesmenPageState extends State<AsesmenPage> {
     return accessToken;
   }
 
+  Future<List<String>> fetchCourses() async {
+    final token = await _loadUserToken(); // Mendapatkan token
+    // Header untuk permintaan HTTP
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+    // print(headers);
+    final response =
+        await http.get(Uri.parse('${Api.host}/matakuliah'), headers: headers);
+
+    if (response.statusCode == 200) {
+      var res = json.decode(response.body);
+      // print(res['data']);
+      final List<dynamic> data = res['data'];
+      List<String> courses = [];
+      for (var course in data) {
+        courses.add(course['nama_mata_kuliah']);
+      }
+      return courses;
+    } else {
+      throw Exception('Failed to load courses');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Pilih Asesmen'),
+          title: const Text('Pilih Mata Kuliah'),
         ),
         body: Container(
           padding: const EdgeInsets.all(20.0),
-          child: FutureBuilder<List<Asesmen>>(
-            future: getAsesmens(widget.matakuliahUUID),
+          child: FutureBuilder<List<String>>(
+            future: _coursesFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator();
-              } else if (snapshot.hasData) {
-                final datas = snapshot.data!;
-                return buildAsesmenListView(datas);
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
               } else {
-                return const Text("No data available");
+                return ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    print(snapshot.data);
+                    return _buildCourseCard(snapshot.data![index], '', context);
+                  },
+                );
               }
             },
           ),
         ));
   }
 
-  Widget buildAsesmenListView(List<Asesmen> asesmens) {
-    return ListView.separated(
-      itemCount: asesmens.length,
-      itemBuilder: (context, index) {
-        final asesmen = asesmens[index];
-        return ListTile(
-          title: Text(asesmen.namaAsesmen!),
-          onTap: () {}, // Handle your onTap here.
-        );
-      },
-      separatorBuilder: (context, index) {
-        // <-- SEE HERE
-        return const Divider();
-      },
-    );
-  }
-
-  Widget _buildAsesmenCard(
+  Widget _buildCourseCard(
       String title, String description, BuildContext context) {
     return Card(
       elevation: 5,
