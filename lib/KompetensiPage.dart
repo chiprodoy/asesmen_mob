@@ -19,7 +19,7 @@ class _KompetensiPageState extends State<KompetensiPage> {
   late Future<List<Kompetensi>> _kompetensisFuture;
   var token = '';
 
-  Future<List<Kompetensi>> getKompetensis(courseUUId) async {
+  Future<List<Kompetensi>> getKompetensis() async {
     final token = await _loadUserToken(); // Mendapatkan token
     // Header untuk permintaan HTTP
     Map<String, String> headers = {
@@ -37,8 +37,9 @@ class _KompetensiPageState extends State<KompetensiPage> {
 
     if (response.statusCode == 200) {
       var res = json.decode(response.body);
-      print(res['data']);
+      //print(res['data']);
       final List data = res['data'];
+
       return data.map((e) => Kompetensi.fromJson(e)).toList();
     } else {
       throw Exception('Failed to load kompetensi');
@@ -60,7 +61,7 @@ class _KompetensiPageState extends State<KompetensiPage> {
         body: Container(
           padding: const EdgeInsets.all(20.0),
           child: FutureBuilder<List<Kompetensi>>(
-            future: getKompetensis(widget.asesmenUUID),
+            future: getKompetensis(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const CircularProgressIndicator();
@@ -80,6 +81,7 @@ class _KompetensiPageState extends State<KompetensiPage> {
       itemCount: kompetensis.length,
       itemBuilder: (context, index) {
         final kompetensi = kompetensis[index];
+        print(kompetensi.namaKompetensi);
         return ListTile(
           title: Text(kompetensi.namaKompetensi!),
           onTap: () {}, // Handle your onTap here.
@@ -89,37 +91,6 @@ class _KompetensiPageState extends State<KompetensiPage> {
         // <-- SEE HERE
         return const Divider();
       },
-    );
-  }
-
-  Widget _buildKompetensiCard(
-      String title, String description, BuildContext context) {
-    return Card(
-      elevation: 5,
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const StudentPage()),
-          );
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(15),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-              Text(description),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

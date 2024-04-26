@@ -10,6 +10,6 @@ class Kompetensi {
     uuid = json['uuid'];
     id = json['id'];
     namaKompetensi = json['nama_kompetensi'];
-    persentase = json['persentase'];
+    persentase = double.parse(json['persentase']);
   }
 }
