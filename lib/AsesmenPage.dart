@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:asesmen_ners/KompetensiPage.dart';
 import 'package:asesmen_ners/Model/Asesmen.dart';
 import 'package:asesmen_ners/Services/Api.dart';
 import 'package:flutter/material.dart';
@@ -82,7 +83,13 @@ class _AsesmenPageState extends State<AsesmenPage> {
         final asesmen = asesmens[index];
         return ListTile(
           title: Text(asesmen.namaAsesmen!),
-          onTap: () {}, // Handle your onTap here.
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => KompetensiPage(asesmen.uuid)),
+            );
+          }, // Handle your onTap here.
         );
       },
       separatorBuilder: (context, index) {
