@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:asesmen_ners/Services/Api.dart';
+import 'package:asesmen_ners/SubKompetensiPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -84,7 +85,13 @@ class _KompetensiPageState extends State<KompetensiPage> {
         print(kompetensi.namaKompetensi);
         return ListTile(
           title: Text(kompetensi.namaKompetensi!),
-          onTap: () {}, // Handle your onTap here.
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => SubKompetensiPage(kompetensi.uuid)),
+            );
+          }, // Handle your onTap here.
         );
       },
       separatorBuilder: (context, index) {

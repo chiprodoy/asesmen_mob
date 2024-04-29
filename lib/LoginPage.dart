@@ -9,7 +9,6 @@ import 'package:http/http.dart' as http;
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -41,12 +40,10 @@ class LoginForm extends StatefulWidget {
 class _LoginFormState extends State<LoginForm> {
   final bool _isLoading = false;
   final _formKey = GlobalKey<FormState>();
-  String email ='';
-  String password='';
-  
-  Future<bool> _authenticate(email,password) async {
+  String email = '';
+  String password = '';
 
-
+  Future<bool> _authenticate(email, password) async {
     // Data yang akan dikirim dalam body request
     Map<String, String> data = {
       'email': email,
@@ -75,9 +72,9 @@ class _LoginFormState extends State<LoginForm> {
         var data = json.decode(response.body);
         print(data['data']['token']);
         // Autentikasi berhasil, lakukan tindakan selanjutnya
-        
+
         const storage = FlutterSecureStorage();
-        await storage.write(key: 'access_token', value: data['data']['token']); 
+        await storage.write(key: 'access_token', value: data['data']['token']);
         return true;
       } else {
         // Autentikasi gagal, tampilkan pesan kesalahan
@@ -115,7 +112,7 @@ class _LoginFormState extends State<LoginForm> {
             const FlutterLogo(
               size: 100,
             ),
-           const SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             TextFormField(
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -157,23 +154,24 @@ class _LoginFormState extends State<LoginForm> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('Processing Data')),
                         );
-                        var isAuthenticated = await _authenticate(email, password);
-                          if(isAuthenticated){
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
+                        var isAuthenticated =
+                            await _authenticate(email, password);
+                        if (isAuthenticated) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
                                 builder: (context) => const LandingPage()),
-                            );                           
-                          }else{
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Autentikasi Gagal')),
-                              );
-                          }
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Autentikasi Gagal')),
+                          );
+                        }
 
                         // Lakukan autentikasi atau tindakan lain di sini
                       }
                     },
-                    child: Text(_isLoading? 'Proccessing..' : 'Login'),
+                    child: Text(_isLoading ? 'Proccessing..' : 'Login'),
                   );
                 },
               ),
