@@ -128,7 +128,20 @@ class _SubKompetensiPageState extends State<SubKompetensiPage> {
                       }
                     },
                   ),
-                )
+                ),
+                Column(
+                    // set the height of the header container as needed
+                    children: <Widget>[
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: const Size.fromHeight(50), // NEW
+                        ),
+                        onPressed: () {
+                          // Respond to button press
+                        },
+                        child: const Text('Simpan'),
+                      )
+                    ]),
               ],
             )));
   }
