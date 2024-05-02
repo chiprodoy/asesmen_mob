@@ -12,6 +12,7 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: Container(
           decoration: BoxDecoration(
@@ -89,6 +90,7 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Container(
       margin: const EdgeInsets.all(20.0),
       padding: const EdgeInsets.all(20.0),
@@ -109,8 +111,9 @@ class _LoginFormState extends State<LoginForm> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const FlutterLogo(
-              size: 100,
+            Image.asset(
+              'images/logo.png',
+              width: size.width * 0.7,
             ),
             const SizedBox(height: 20.0),
             TextFormField(

@@ -89,7 +89,8 @@ class _KompetensiPageState extends State<KompetensiPage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => SubKompetensiPage(kompetensi.uuid)),
+                  builder: (context) =>
+                      SubKompetensiPage(kompetensi.uuid, kompetensi)),
             );
           }, // Handle your onTap here.
         );

@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:asesmen_ners/KompetensiPage.dart';
+import 'package:asesmen_ners/Model/Kompetensi.dart';
+import 'package:asesmen_ners/Model/NilaiSubKompetensi.dart';
 import 'package:asesmen_ners/Model/SubKompetensi.dart';
 import 'package:asesmen_ners/Services/Api.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +10,8 @@ import 'package:http/http.dart' as http;
 
 class SubKompetensiPage extends StatefulWidget {
   final String? kompetensiUUID;
-  const SubKompetensiPage(this.kompetensiUUID);
+  final Kompetensi kompetensi;
+  const SubKompetensiPage(this.kompetensiUUID, this.kompetensi);
 
   @override
   _SubKompetensiPageState createState() => _SubKompetensiPageState();
@@ -16,7 +19,7 @@ class SubKompetensiPage extends StatefulWidget {
 
 class _SubKompetensiPageState extends State<SubKompetensiPage> {
   late Future<List<SubKompetensi>> _subKompetensisFuture;
-  String _mySelection = '';
+  String _selectedMhs = '';
   List<dynamic>? _studentDatas; //edited line
   var token = '';
 
@@ -61,7 +64,7 @@ class _SubKompetensiPageState extends State<SubKompetensiPage> {
       'Authorization': 'Bearer $token',
     };
     // print(headers);
-    print('cuuid: ' + widget.kompetensiUUID!);
+    print('cuuid: ${widget.kompetensiUUID!}');
     print('${Api.host}/subkompetensi/${widget.kompetensiUUID}');
 
     final response = await http.get(
@@ -107,11 +110,12 @@ class _SubKompetensiPageState extends State<SubKompetensiPage> {
                         }).toList(),
                         onChanged: (newVal) {
                           setState(() {
-                            _mySelection = newVal!;
+                            _selectedMhs = newVal!;
                           });
                         },
-                        value: _mySelection.isEmpty ? null : _mySelection,
-                      )
+                        value: _selectedMhs.isEmpty ? null : _selectedMhs,
+                      ),
+                      Text(widget.kompetensi.namaKompetensi!)
                     ]),
                 Container(
                   margin: const EdgeInsets.only(top: 5),
@@ -128,7 +132,21 @@ class _SubKompetensiPageState extends State<SubKompetensiPage> {
                       }
                     },
                   ),
-                )
+                ),
+                // Column(
+                //   children: [
+                //     ElevatedButton(
+                //       style: ElevatedButton.styleFrom(
+                //         minimumSize: const Size.fromHeight(
+                //             40), // fromHeight use double.infinity as width and 40 is the height
+                //       ),
+                //       onPressed: () {
+                //         // Respond to button press
+                //       },
+                //       child: const Text('Simpan'),
+                //     )
+                //   ],
+                // )
               ],
             )));
   }
@@ -142,20 +160,32 @@ class _SubKompetensiPageState extends State<SubKompetensiPage> {
         final subKompetensi = subKompetensis[index];
         return ListTile(
           title: Text(subKompetensi.namaSubKompetensi!),
-          trailing: const SizedBox(
+          trailing: SizedBox(
               width: 30,
               child: TextField(
-                  decoration: InputDecoration(
-                border: OutlineInputBorder(), isDense: true, // Added this
-                contentPadding: EdgeInsets.all(8),
-              ))),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => KompetensiPage(subKompetensi.uuid)),
-            );
-          }, // Handle your onTap here.
+                  onChanged: (inputNilai) async {
+                    print('_selectedMhs: $_selectedMhs');
+                    print('subKompetensi id: ${subKompetensi.id}');
+                    print('inputNilai: $inputNilai');
+
+                    NilaiSubKompetensi nilai = NilaiSubKompetensi(
+                        1,
+                        subKompetensi.id,
+                        subKompetensi.uuid,
+                        int.parse(_selectedMhs),
+                        1,
+                        int.parse(inputNilai));
+                    bool nilaiHasStored = await nilai.store();
+                    if (nilaiHasStored) {
+                      const SnackBar(content: Text('Data Berhasil Disimpan'));
+                    } else {
+                      const SnackBar(content: Text('Data Gagal Disimpan'));
+                    }
+                  },
+                  decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      isDense: true, // Added this
+                      contentPadding: EdgeInsets.all(8)))),
         );
       },
       separatorBuilder: (context, index) {
