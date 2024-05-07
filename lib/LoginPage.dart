@@ -83,14 +83,34 @@ class _LoginFormState extends State<LoginForm> {
       }
     } catch (error) {
       print('Terjadi kesalahan: $error');
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return alert('Login gagal', 'Terjadi kesalahan: $error');
+        },
+      );
       // Menangani kesalahan yang mungkin terjadi
       return false;
     }
   }
 
+  AlertDialog alert(String title, String message) {
+    Widget okButton = TextButton(
+      child: Text("OK"),
+      onPressed: () {},
+    );
+    AlertDialog alert = AlertDialog(
+      title: Text(title),
+      content: Text(message),
+      actions: [okButton],
+    );
+    return alert;
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+
     return Container(
       margin: const EdgeInsets.all(20.0),
       padding: const EdgeInsets.all(20.0),
@@ -112,7 +132,7 @@ class _LoginFormState extends State<LoginForm> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Image.asset(
-              'images/logo.png',
+              'assets/images/logo.png',
               width: size.width * 0.7,
             ),
             const SizedBox(height: 20.0),

@@ -7,6 +7,7 @@ class LandingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: Container(
           decoration: BoxDecoration(
@@ -104,7 +105,6 @@ class LandingPage extends StatelessWidget {
     );
   }
 }
-
 
 class ImportMahasiswaPage extends StatelessWidget {
   const ImportMahasiswaPage({super.key});

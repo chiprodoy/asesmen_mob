@@ -12,9 +12,18 @@ class NilaiSubKompetensi {
   int? mahasiswaID;
   int? dosenID;
   int? nilai;
+  String? pembimbingAkademik;
+  String? pembimbingLapangan;
 
-  NilaiSubKompetensi(this.id, this.subKompetensiID, this.subKompetensiUUID,
-      this.mahasiswaID, this.dosenID, this.nilai);
+  NilaiSubKompetensi(
+      this.id,
+      this.subKompetensiID,
+      this.subKompetensiUUID,
+      this.mahasiswaID,
+      this.dosenID,
+      this.nilai,
+      this.pembimbingAkademik,
+      this.pembimbingLapangan);
 
   NilaiSubKompetensi.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -22,6 +31,8 @@ class NilaiSubKompetensi {
     mahasiswaID = json['mahasiswa_id'];
     dosenID = json['dosen_id'];
     nilai = json['nilai'];
+    pembimbingAkademik = json['pembimbing_akademik'];
+    pembimbingLapangan = json['pembimbing_lapangan'];
   }
 
   _loadUserToken() async {
@@ -48,6 +59,8 @@ class NilaiSubKompetensi {
         body: jsonEncode({
           "mahasiswa_id": this.mahasiswaID,
           "nilai": this.nilai,
+          "pembimbing_akademik": this.pembimbingAkademik,
+          "pembimbing_lapangan": this.pembimbingLapangan
         }));
 
     if (response.statusCode == 200) {
