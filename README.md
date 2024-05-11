@@ -18,3 +18,7 @@ samples, guidance on mobile development, and a full API reference.
 example user : dosen@example.com
 
 https://medium.com/@alamsyah15/flutter-dropdown-menu-from-rest-api-aca3ba6dc04d
+
+Keterampilan dasar propfesi > Laporan pendahuluan > kognitif 
+
+adb connect 127.0.0.1:62001

@@ -8,7 +8,6 @@ void main() {
   runApp(const MyApp());
 }
 
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -64,29 +63,29 @@ class _MyHomePageState extends State<MyHomePage> {
   bool isAuth = false;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     _checkIfLoggedIn();
   }
 
   void _checkIfLoggedIn() async {
-      SharedPreferences localStorage = await SharedPreferences.getInstance();
-      var token = localStorage.getString('token');
-      if(token != null){
-        if(mounted){
-          setState(() {
-            isAuth = true;
-          });
-        }
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var token = localStorage.getString('access_token');
+    if (token != null) {
+      if (mounted) {
+        setState(() {
+          isAuth = true;
+        });
       }
     }
+  }
 
   @override
   Widget build(BuildContext context) {
     Widget child;
-    if(isAuth){
+    if (isAuth) {
       child = const LandingPage();
-    } else{
+    } else {
       child = const LoginPage();
     }
 

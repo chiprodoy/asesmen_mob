@@ -1,4 +1,5 @@
 import 'package:asesmen_ners/CoursePage.dart';
+import 'package:asesmen_ners/StudentPage.dart';
 import 'package:flutter/material.dart';
 
 class LandingPage extends StatelessWidget {
@@ -7,6 +8,7 @@ class LandingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: Container(
           decoration: BoxDecoration(
@@ -27,7 +29,7 @@ class LandingPage extends StatelessWidget {
                     Icon(Icons.person, color: Colors.white, size: 30),
                     SizedBox(width: 10),
                     Text(
-                      'Selamat Datang, Nama Pengguna',
+                      'Selamat Datang',
                       style: TextStyle(color: Colors.white, fontSize: 18),
                     ),
                   ],
@@ -41,17 +43,6 @@ class LandingPage extends StatelessWidget {
                     mainAxisSpacing: 20,
                     crossAxisSpacing: 20,
                     children: [
-                      _buildCard(Icons.book, 'Kurikulum', () {
-                        // Tindakan saat card kurikulum diklik
-                      }),
-                      _buildCard(Icons.menu_book, 'Mata Kuliah', () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const CoursePage(),
-                          ),
-                        );
-                      }),
                       _buildCard(Icons.rate_review, 'Form Penilaian', () {
                         // Tindakan saat card form penilaian diklik
                         Navigator.push(
@@ -61,12 +52,12 @@ class LandingPage extends StatelessWidget {
                           ),
                         );
                       }),
-                      _buildCard(Icons.people, 'Import Mahasiswa', () {
+                      _buildCard(Icons.people, ' Mahasiswa', () {
                         // Tindakan saat card import mahasiswa diklik
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const ImportMahasiswaPage(),
+                            builder: (context) => const StudentPage(),
                           ),
                         );
                       }),
@@ -104,7 +95,6 @@ class LandingPage extends StatelessWidget {
     );
   }
 }
-
 
 class ImportMahasiswaPage extends StatelessWidget {
   const ImportMahasiswaPage({super.key});

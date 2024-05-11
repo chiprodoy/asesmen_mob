@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:asesmen_ners/KompetensiPage.dart';
+//import 'package:asesmen_ners/KompetensiPage.dar';
 import 'package:asesmen_ners/Model/Asesmen.dart';
 import 'package:asesmen_ners/Services/Api.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +7,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 import 'StudentPage.dart';
+import 'SubKompetensiPage.dart';
 
 class AsesmenPage extends StatefulWidget {
   final String? matakuliahUUID;
@@ -87,7 +88,7 @@ class _AsesmenPageState extends State<AsesmenPage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => KompetensiPage(asesmen.uuid)),
+                  builder: (context) => SubKompetensiPage(asesmen.uuid)),
             );
           }, // Handle your onTap here.
         );
