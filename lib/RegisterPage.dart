@@ -1,15 +1,15 @@
 import 'dart:convert';
 
+import 'package:asesmen_ners/LoginPage.dart';
+import 'package:asesmen_ners/Model/Dosen.dart';
 import 'package:asesmen_ners/Services/Api.dart';
 import 'package:asesmen_ners/LandingPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
-import 'RegisterPage.dart';
-
-class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+class RegisterPage extends StatelessWidget {
+  const RegisterPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,17 +17,14 @@ class LoginPage extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Colors.blue[400]!, Colors.blue[900]!],
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Colors.blue[400]!, Colors.blue[900]!],
+              ),
             ),
-          ),
-          child: const Center(
-            child: LoginForm(),
-          ),
-        ),
+            child: const LoginForm()),
       ),
     );
   }
@@ -43,8 +40,11 @@ class LoginForm extends StatefulWidget {
 class _LoginFormState extends State<LoginForm> {
   final bool _isLoading = false;
   final _formKey = GlobalKey<FormState>();
-  String email = '';
-  String password = '';
+  String _nidn = '';
+  String _nama = '';
+  String _telepon = '';
+  String _email = '';
+  String _password = '';
 
   Future<bool> _authenticate(email, password) async {
     // Data yang akan dikirim dalam body request
@@ -88,7 +88,7 @@ class _LoginFormState extends State<LoginForm> {
       showDialog(
         context: context,
         builder: (BuildContext context) {
-          return alert('Login gagal', 'Terjadi kesalahan: $error');
+          return alert('Pendaftaran gagal', 'Terjadi kesalahan: $error');
         },
       );
       // Menangani kesalahan yang mungkin terjadi
@@ -133,22 +133,59 @@ class _LoginFormState extends State<LoginForm> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Image.asset(
-              'assets/images/logo.png',
-              width: size.width * 0.7,
+            const SizedBox(height: 20.0),
+            TextFormField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'NIDN tidak boleh kosong';
+                }
+                _nidn = value;
+                return null;
+              },
+              decoration: const InputDecoration(
+                hintText: 'NIDN',
+                border: OutlineInputBorder(),
+              ),
             ),
             const SizedBox(height: 20.0),
             TextFormField(
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Username tidak boleh kosong';
+                  return 'Nama tidak boleh kosong';
                 }
-                email = value;
+                _nama = value;
                 return null;
               },
               decoration: const InputDecoration(
-                hintText: 'Username',
-                prefixIcon: Icon(Icons.person),
+                hintText: 'Nama',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 20.0),
+            TextFormField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Email tidak boleh kosong';
+                }
+                _email = value;
+                return null;
+              },
+              decoration: const InputDecoration(
+                hintText: 'Email',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 20.0),
+            TextFormField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'No Telpon tidak boleh kosong';
+                }
+                _telepon = value;
+                return null;
+              },
+              decoration: const InputDecoration(
+                hintText: 'No Telp / Hp',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -158,13 +195,12 @@ class _LoginFormState extends State<LoginForm> {
                 if (value == null || value.isEmpty) {
                   return 'Password tidak boleh kosong';
                 }
-                password = value;
+                _password = value;
                 return null;
               },
               obscureText: true,
               decoration: const InputDecoration(
                 hintText: 'Password',
-                prefixIcon: Icon(Icons.lock),
                 border: OutlineInputBorder(),
               ),
             ),
@@ -179,24 +215,33 @@ class _LoginFormState extends State<LoginForm> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('Processing Data')),
                         );
-                        var isAuthenticated =
-                            await _authenticate(email, password);
-                        if (isAuthenticated) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const LandingPage()),
+                        Dosen dosen = Dosen();
+                        dosen.nama = _nama;
+                        dosen.nidn = _nidn;
+                        dosen.email = _email;
+                        dosen.telepon = _telepon;
+                        dosen.password = _password;
+                        var isStoreSuccess = await dosen.store();
+                        if (isStoreSuccess) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Pendaftaran berhasil')),
                           );
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //       builder: (context) => const LoginPage()),
+                          // );
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Autentikasi Gagal')),
+                            const SnackBar(content: Text('Pendaftaran Gagal')),
                           );
                         }
 
                         // Lakukan autentikasi atau tindakan lain di sini
                       }
                     },
-                    child: Text(_isLoading ? 'Proccessing..' : 'Login'),
+                    child: Text(_isLoading ? 'Proccessing..' : 'Simpan'),
                   );
                 },
               ),
@@ -207,10 +252,10 @@ class _LoginFormState extends State<LoginForm> {
                 // Tindakan untuk tombol lupa password
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const RegisterPage()),
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
                 );
               },
-              child: const Text('Buat Akun'),
+              child: const Text('Kembali'),
             ),
           ],
         ),

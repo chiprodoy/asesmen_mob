@@ -1,92 +1,122 @@
-import 'package:asesmen_ners/AsesmenPage.dart';
+import 'dart:convert';
+//import 'package:asesmen_ners/KompetensiPage.dar';
+import 'package:asesmen_ners/Model/Mahasiswa.dart';
+import 'package:asesmen_ners/Services/Api.dart';
+import 'package:asesmen_ners/StudentCreatePage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
 
 class StudentPage extends StatefulWidget {
   const StudentPage({super.key});
+
+  // final Kompetensi kompetensi;
 
   @override
   _StudentPageState createState() => _StudentPageState();
 }
 
 class _StudentPageState extends State<StudentPage> {
+  late Future<List<Mahasiswa>> _mahasiswaFuture;
+  List<dynamic>? _studentDatas; //edited line
+
+  var token = '';
+
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Mahasiswa'),
-          actions: const [
-            Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Selamat Datang, Nama Pengguna',
-                    style: TextStyle(fontSize: 12),
-                  ),
-                  CircleAvatar(
-                    backgroundImage: AssetImage('assets/user_photo.jpg'),
-                    radius: 20,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        body: Container(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Pilih Mahasiswa',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 20),
-              Expanded(
-                child: ListView(
-                  children: [
-                    _buildStudentTile('Mahasiswa 1', context),
-                    _buildStudentTile('Mahasiswa 2', context),
-                    _buildStudentTile('Mahasiswa 3', context),
-                    _buildStudentTile('Mahasiswa 4', context),
-                    _buildStudentTile('Mahasiswa 5', context),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+  void initState() {
+    super.initState();
   }
 
-  Widget _buildStudentTile(String studentName, BuildContext context) {
-    return Card(
-      elevation: 5,
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => StudentPage()),
-          );
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(15),
-          child: Row(
-            children: [
-              const Icon(Icons.person),
-              const SizedBox(width: 10),
-              Text(
-                studentName,
-                style: const TextStyle(fontSize: 18),
-              ),
-            ],
-          ),
-        ),
-      ),
+  Future<List<Mahasiswa>> getStudents() async {
+    final token = await _loadUserToken(); // Mendapatkan token
+    // Header untuk permintaan HTTP
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    final response =
+        await http.get(Uri.parse('${Api.host}/mahasiswa'), headers: headers);
+
+    if (response.statusCode == 200) {
+      var res = json.decode(response.body);
+      print(res['data']);
+      final List data = res['data'];
+      return data.map((e) => Mahasiswa.fromJson(e)).toList();
+    } else {
+      throw Exception('Failed to load asesmen');
+    }
+  }
+
+  _loadUserToken() async {
+    const storage = FlutterSecureStorage();
+    final accessToken = await storage.read(key: 'access_token');
+    return accessToken;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(title: const Text('Mahasiswa')),
+        body: Container(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              children: <Widget>[
+                Expanded(
+                  child: FutureBuilder<List<Mahasiswa>>(
+                    future: getStudents(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const SizedBox(
+                          height: 5.0,
+                          width: 5.0,
+                          child: Center(child: CircularProgressIndicator()),
+                        );
+                      } else if (snapshot.hasData) {
+                        final datas = snapshot.data!;
+                        return buildStudentListView(datas);
+                      } else {
+                        return const Text("No data available");
+                      }
+                    },
+                  ),
+                ),
+                Column(
+                  children: [
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size.fromHeight(
+                            40), // fromHeight use double.infinity as width and 40 is the height
+                      ),
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const StudentCreatePage()),
+                      ),
+                      child: const Text('Tambah'),
+                    )
+                  ],
+                )
+              ],
+            )));
+  }
+
+  Widget buildStudentListView(List<Mahasiswa> mahasiswas) {
+    return ListView.separated(
+      physics: const ScrollPhysics(),
+      shrinkWrap: true,
+      itemCount: mahasiswas.length,
+      itemBuilder: (context, index) {
+        final mahasiswa = mahasiswas[index];
+        return ListTile(
+          title: Text(mahasiswa.nama!),
+        );
+      },
+      separatorBuilder: (context, index) {
+        // <-- SEE HERE
+        return const Divider();
+      },
     );
   }
 }

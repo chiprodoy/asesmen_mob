@@ -6,6 +6,7 @@ import 'package:asesmen_ners/Model/NilaiSubKompetensi.dart';
 import 'package:asesmen_ners/Model/SubKompetensi.dart';
 import 'package:asesmen_ners/Services/Api.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_cached_pdfview/flutter_cached_pdfview.dart';
@@ -189,11 +190,9 @@ class _SubKompetensiPageState extends State<SubKompetensiPage> {
                           Navigator.push(
                               context,
                               MaterialPageRoute<dynamic>(
-                                builder: (_) => PDFViewerFromUrl(
-                                  url:
-                                      '${Api.host}/asesmen_report/${_selectedMhs}',
-                                ),
-                              )),
+                                  builder: (_) => PDFViewerFromUrl(
+                                      url:
+                                          '${Api.host}/asesmen_report/$_selectedMhs'))),
                       child: const Text('Simpan'),
                     )
                   ],
@@ -254,6 +253,13 @@ class _SubKompetensiPageState extends State<SubKompetensiPage> {
           trailing: SizedBox(
               width: 30,
               child: TextField(
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    // for below version 2 use this
+                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+// for version 2 and greater youcan also use this
+                    FilteringTextInputFormatter.digitsOnly
+                  ],
                   onChanged: (inputNilai) async {
                     print('_selectedMhs: $_selectedMhs');
                     print('subKompetensi id: ${subKompetensi.id}');
