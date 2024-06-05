@@ -88,7 +88,8 @@ class _AsesmenPageState extends State<AsesmenPage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => SubKompetensiPage(asesmen.uuid)),
+                  builder: (context) =>
+                      SubKompetensiPage(asesmen.uuid, asesmen.id)),
             );
           }, // Handle your onTap here.
         );

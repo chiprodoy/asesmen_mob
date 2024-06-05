@@ -1,7 +1,5 @@
 import 'dart:convert';
 //import 'package:asesmen_ners/KompetensiPage.dar';
-import 'package:asesmen_ners/Model/Dosen.dart';
-import 'package:asesmen_ners/Model/Kompetensi.dart';
 import 'package:asesmen_ners/Model/NilaiSubKompetensi.dart';
 import 'package:asesmen_ners/Model/SubKompetensi.dart';
 import 'package:asesmen_ners/Services/Api.dart';
@@ -9,35 +7,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_cached_pdfview/flutter_cached_pdfview.dart';
+
+import 'DownloadPDFPage.dart';
 
 class SubKompetensiPage extends StatefulWidget {
   final String? kompetensiUUID;
+  final int? asesmenID;
   // final Kompetensi kompetensi;
-  const SubKompetensiPage(this.kompetensiUUID);
+  const SubKompetensiPage(this.kompetensiUUID, this.asesmenID);
 
   @override
   _SubKompetensiPageState createState() => _SubKompetensiPageState();
-}
-
-class PDFViewerFromUrl extends StatelessWidget {
-  const PDFViewerFromUrl({Key? key, required this.url}) : super(key: key);
-
-  final String url;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Laporan Asesmen'),
-      ),
-      body: const PDF(swipeHorizontal: true).fromUrl(
-        url,
-        placeholder: (double progress) => Center(child: Text('$progress %')),
-        errorWidget: (dynamic error) => Center(child: Text(error.toString())),
-      ),
-    );
-  }
 }
 
 class _SubKompetensiPageState extends State<SubKompetensiPage> {
@@ -186,13 +166,14 @@ class _SubKompetensiPageState extends State<SubKompetensiPage> {
                             40), // fromHeight use double.infinity as width and 40 is the height
                       ),
                       onPressed: () =>
+
                           // Respond to button press
                           Navigator.push(
                               context,
                               MaterialPageRoute<dynamic>(
-                                  builder: (_) => PDFViewerFromUrl(
+                                  builder: (_) => DownloadPDFPage(
                                       url:
-                                          '${Api.host}/asesmen_report/$_selectedMhs'))),
+                                          '${Api.host}/asesmen_report/$_selectedMhs/${widget.asesmenID!}'))),
                       child: const Text('Simpan'),
                     )
                   ],
