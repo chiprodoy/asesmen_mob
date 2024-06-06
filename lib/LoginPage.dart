@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:asesmen_ners/MahasiswaLandingPage.dart';
 import 'package:asesmen_ners/Services/Api.dart';
 import 'package:asesmen_ners/LandingPage.dart';
 import 'package:flutter/material.dart';
@@ -45,6 +46,42 @@ class _LoginFormState extends State<LoginForm> {
   final _formKey = GlobalKey<FormState>();
   String email = '';
   String password = '';
+  MaterialPageRoute _pageRoute =
+      MaterialPageRoute(builder: (context) => const MahasiswaLandingPage());
+
+  Future<String> _getUserRoleName() async {
+    final storage = FlutterSecureStorage();
+
+    String role_name = '';
+    role_name = (await storage.read(key: 'role_name'))!;
+
+    return role_name;
+  }
+
+  MaterialPageRoute _drawLandingPage() {
+    _getUserRoleName().then((value) {
+      if (value == 'dosen') {
+        setState(() {
+          _pageRoute =
+              MaterialPageRoute(builder: (context) => const LandingPage());
+        });
+        print('landingpage');
+      } else if (value == 'mahasiswa') {
+        setState(() {
+          _pageRoute = MaterialPageRoute(
+              builder: (context) => const MahasiswaLandingPage());
+        });
+      }
+    });
+    return _pageRoute;
+
+    // if (_role == 'dosen') {
+    //   return MaterialPageRoute(builder: (context) => const LandingPage());
+    // }
+
+    // return MaterialPageRoute(
+    //     builder: (context) => const MahasiswaLandingPage());
+  }
 
   Future<bool> _authenticate(email, password) async {
     // Data yang akan dikirim dalam body request
@@ -78,6 +115,11 @@ class _LoginFormState extends State<LoginForm> {
 
         const storage = FlutterSecureStorage();
         await storage.write(key: 'access_token', value: data['data']['token']);
+        await storage.write(
+            key: 'role_name',
+            value: data['data']['user']['roles'][0]['role_name']);
+        print(await storage.readAll());
+
         return true;
       } else {
         // Autentikasi gagal, tampilkan pesan kesalahan
@@ -182,11 +224,22 @@ class _LoginFormState extends State<LoginForm> {
                         var isAuthenticated =
                             await _authenticate(email, password);
                         if (isAuthenticated) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const LandingPage()),
-                          );
+                          _getUserRoleName().then((value) {
+                            if (value == 'dosen') {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const LandingPage()),
+                              );
+                            } else if (value == 'mahasiswa') {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const MahasiswaLandingPage()),
+                              );
+                            }
+                          });
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Autentikasi Gagal')),
