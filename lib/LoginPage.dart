@@ -111,10 +111,14 @@ class _LoginFormState extends State<LoginForm> {
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
         print(data['data']['token']);
+        print(data['data']['user  ']);
+
         // Autentikasi berhasil, lakukan tindakan selanjutnya
 
         const storage = FlutterSecureStorage();
         await storage.write(key: 'access_token', value: data['data']['token']);
+        await storage.write(
+            key: 'user_id', value: data['data']['user']['id'].toString());
         await storage.write(
             key: 'role_name',
             value: data['data']['user']['roles'][0]['role_name']);

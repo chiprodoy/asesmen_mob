@@ -72,19 +72,19 @@ class _MyHomePageState extends State<MyHomePage> {
   void _checkIfLoggedIn() async {
     //  SharedPreferences localStorage = await SharedPreferences.getInstance();
     //  var token = localStorage.getString('access_token');
-    final storage = new FlutterSecureStorage();
-    // Read value
-    String? token = '';
-    await Future.sync(
-        () async => token = await storage.read(key: 'access_token'));
+    // final storage = new FlutterSecureStorage();
+    // // Read value
+    // String? token = '';
+    // await Future.sync(
+    //     () async => token = await storage.read(key: 'access_token'));
 
-    if (token!.isNotEmpty) {
-      if (mounted) {
-        setState(() {
-          isAuth = true;
-        });
-      }
-    }
+    // if (token.isNotEmpty) {
+    //   if (mounted) {
+    //     setState(() {
+    //       isAuth = true;
+    //     });
+    //   }
+    // }
   }
 
   @override

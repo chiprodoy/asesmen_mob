@@ -49,7 +49,9 @@ class PDFViewerFromUrl extends State<DownloadPDFPage> {
         );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Download failed: $e')),
+          SnackBar(
+              content: Text(
+                  'Downlod Failed : Nilai Tidak ditemukan, silahkan input nilai terlebih dahulu')),
         );
       } finally {
         setState(() {
@@ -66,24 +68,52 @@ class PDFViewerFromUrl extends State<DownloadPDFPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Laporan Asesmen'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.download),
-            tooltip: 'Download File',
-            onPressed: () {
-              // handle the press
-              _downloadFile(widget.url);
-            },
-          ),
-        ],
-      ),
-      body: const PDF(swipeHorizontal: true).fromUrl(
-        widget.url,
-        placeholder: (double progress) => Center(child: Text('$progress %')),
-        errorWidget: (dynamic error) => Center(child: Text(error.toString())),
-      ),
+        appBar: AppBar(
+          title: const Text('Laporan Asesmen'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.download),
+              tooltip: 'Download File',
+              onPressed: () {
+                // handle the press
+                _downloadFile(widget.url);
+              },
+            ),
+          ],
+        ),
+        body: const PDF(swipeHorizontal: true).fromUrl(
+          widget.url,
+          placeholder: (double progress) => Center(child: Text('$progress %')),
+          errorWidget: (dynamic error) => Center(
+              child: Text(
+                  'Nilai Tidak ditemukan, silahkan input nilai terlebih dahulu')),
+        ));
+  }
+
+  showAlertDialog(BuildContext context, String title, String msg) {
+    // set up the button
+    Widget okButton = TextButton(
+      child: Text("OK"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text(title),
+      content: Text(msg),
+      actions: [
+        okButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
     );
   }
 }

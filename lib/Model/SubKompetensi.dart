@@ -6,19 +6,20 @@ class SubKompetensi {
   String? uuid;
   String? namaSubKompetensi;
   String? skorPenilaian;
-  Kompetensi? kompetensi;
-  SubKompetensi(
-      {this.id,
-      this.uuid,
-      this.namaSubKompetensi,
-      this.skorPenilaian,
-      this.kompetensi});
+  //Kompetensi? kompetensi;
+  SubKompetensi({
+    this.id,
+    this.uuid,
+    this.namaSubKompetensi,
+    this.skorPenilaian,
+    //this.kompetensi
+  });
 
   SubKompetensi.fromJson(Map<String, dynamic> json) {
     uuid = json['uuid'];
     id = json['id'];
     namaSubKompetensi = json['nama_sub_kompetensi'];
     skorPenilaian = json['skor_penilaian'];
-    kompetensi = Kompetensi.fromJson(json['kompetensi']);
+    //kompetensi = Kompetensi.fromJson(json['kompetensi']);
   }
 }

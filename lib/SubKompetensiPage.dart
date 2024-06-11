@@ -1,5 +1,6 @@
 import 'dart:convert';
 //import 'package:asesmen_ners/KompetensiPage.dar';
+import 'package:asesmen_ners/Model/Kompetensi.dart';
 import 'package:asesmen_ners/Model/NilaiSubKompetensi.dart';
 import 'package:asesmen_ners/Model/SubKompetensi.dart';
 import 'package:asesmen_ners/Services/Api.dart';
@@ -115,6 +116,32 @@ class _SubKompetensiPageState extends State<SubKompetensiPage> {
     }
   }
 
+  Future<List<Kompetensi>> getKompetensis() async {
+    final token = await _loadUserToken(); // Mendapatkan token
+    // Header untuk permintaan HTTP
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+    // print(headers);
+    print('assid: ${widget.asesmenID!}');
+    print('${Api.host}/kompetensi/${widget.asesmenID}');
+
+    final response = await http.get(
+        Uri.parse('${Api.host}/kompetensi/${widget.asesmenID}'),
+        headers: headers);
+
+    if (response.statusCode == 200) {
+      var res = json.decode(response.body);
+//      print(res['data']);
+      final List data = res['data'];
+      return data.map((e) => Kompetensi.fromJson(e)).toList();
+    } else {
+      throw Exception('Failed to load asesmen');
+    }
+  }
+
   _loadUserToken() async {
     const storage = FlutterSecureStorage();
     final accessToken = await storage.read(key: 'access_token');
@@ -132,6 +159,7 @@ class _SubKompetensiPageState extends State<SubKompetensiPage> {
             child: Column(
               children: <Widget>[
                 Column(
+
                     // set the height of the header container as needed
                     children: <Widget>[
                       dropDownMahasiswa(),
@@ -140,8 +168,8 @@ class _SubKompetensiPageState extends State<SubKompetensiPage> {
                       //Text(widget.kompetensi.namaKompetensi!)
                     ]),
                 Expanded(
-                  child: FutureBuilder<List<SubKompetensi>>(
-                    future: getSubKompetensis(),
+                  child: FutureBuilder<List<Kompetensi>>(
+                    future: getKompetensis(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const SizedBox(
@@ -151,7 +179,9 @@ class _SubKompetensiPageState extends State<SubKompetensiPage> {
                         );
                       } else if (snapshot.hasData) {
                         final datas = snapshot.data!;
-                        return buildSubKompetensiListView(datas);
+                        print('future');
+                        print(datas);
+                        return buildKompetensiListView(datas);
                       } else {
                         return const Text("No data available");
                       }
@@ -222,6 +252,28 @@ class _SubKompetensiPageState extends State<SubKompetensiPage> {
         ));
   }
 
+  Widget buildKompetensiListView(List<Kompetensi> kompetensis) {
+    return ListView.separated(
+        separatorBuilder: (BuildContext context, int index) {
+          return const Divider(color: Colors.amber);
+        },
+        physics: const ScrollPhysics(),
+        itemCount: kompetensis.length,
+        itemBuilder: (context, index) {
+          final kompetensi = kompetensis[index];
+          return Column(
+            children: [
+              ListTile(
+                //tileColor: Colors.grey,
+                title: Text(kompetensi.namaKompetensi!,
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
+              ),
+              buildSubKompetensiListView(kompetensi.subKompetensi!.toList())
+            ],
+          );
+        });
+  }
+
   Widget buildSubKompetensiListView(List<SubKompetensi> subKompetensis) {
     return ListView.separated(
       physics: const ScrollPhysics(),
@@ -232,59 +284,55 @@ class _SubKompetensiPageState extends State<SubKompetensiPage> {
         return ListTile(
           title: Text(subKompetensi.namaSubKompetensi!),
           trailing: SizedBox(
-              width: 30,
-              child: TextField(
-                  keyboardType: TextInputType.number,
-                  inputFormatters: <TextInputFormatter>[
-                    // for below version 2 use this
-                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-// for version 2 and greater youcan also use this
-                    FilteringTextInputFormatter.digitsOnly
-                  ],
-                  onChanged: (inputNilai) async {
-                    print('_selectedMhs: $_selectedMhs');
-                    print('subKompetensi id: ${subKompetensi.id}');
-                    print('inputNilai: $inputNilai');
-                    print('_pembimbingAkademik: $_pembimbingAkademik');
-                    print('_pembimbingLapangan: $_pembimbingLapangan');
-                    if (_selectedMhs.isEmpty) {
-                      AlertDialog alert = AlertDialog(
-                        title: const Text('Pilih Mahasiswa'),
-                        content: const Text(
-                            'Mahasiswa Belum dipilih, pilih mahasiswa terlebih dahulu'),
-                        actions: <Widget>[
-                          TextButton(
-                            child: Text('Ok'),
-                            onPressed: () =>
-                                Navigator.of(context, rootNavigator: true)
-                                    .pop(),
-                          ),
-                        ],
-                      );
-                      showDialog(context: context, builder: (context) => alert);
-                      return;
+              width: 60,
+              child: DropdownButton<String>(
+                isExpanded: true,
+                items: <String>['0', '1', '2', '3', '4'].map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value, overflow: TextOverflow.ellipsis),
+                  );
+                }).toList(),
+                onChanged: (inputNilai) async {
+                  print('_selectedMhs: $_selectedMhs');
+                  print('subKompetensi id: ${subKompetensi.id}');
+                  print('inputNilai: $inputNilai');
+                  print('_pembimbingAkademik: $_pembimbingAkademik');
+                  print('_pembimbingLapangan: $_pembimbingLapangan');
+                  if (_selectedMhs.isEmpty) {
+                    AlertDialog alert = AlertDialog(
+                      title: const Text('Pilih Mahasiswa'),
+                      content: const Text(
+                          'Mahasiswa Belum dipilih, pilih mahasiswa terlebih dahulu'),
+                      actions: <Widget>[
+                        TextButton(
+                          child: Text('Ok'),
+                          onPressed: () =>
+                              Navigator.of(context, rootNavigator: true).pop(),
+                        ),
+                      ],
+                    );
+                    showDialog(context: context, builder: (context) => alert);
+                    return;
+                  } else {
+                    NilaiSubKompetensi nilai = NilaiSubKompetensi(
+                        1,
+                        subKompetensi.id,
+                        subKompetensi.uuid,
+                        int.parse(_selectedMhs),
+                        1,
+                        int.parse(inputNilai!),
+                        _pembimbingAkademik,
+                        _pembimbingLapangan);
+                    bool nilaiHasStored = await nilai.store();
+                    if (nilaiHasStored) {
+                      const SnackBar(content: Text('Data Berhasil Disimpan'));
                     } else {
-                      NilaiSubKompetensi nilai = NilaiSubKompetensi(
-                          1,
-                          subKompetensi.id,
-                          subKompetensi.uuid,
-                          int.parse(_selectedMhs),
-                          1,
-                          int.parse(inputNilai),
-                          _pembimbingAkademik,
-                          _pembimbingLapangan);
-                      bool nilaiHasStored = await nilai.store();
-                      if (nilaiHasStored) {
-                        const SnackBar(content: Text('Data Berhasil Disimpan'));
-                      } else {
-                        const SnackBar(content: Text('Data Gagal Disimpan'));
-                      }
+                      const SnackBar(content: Text('Data Gagal Disimpan'));
                     }
-                  },
-                  decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      isDense: true, // Added this
-                      contentPadding: EdgeInsets.all(8)))),
+                  }
+                },
+              )),
         );
       },
       separatorBuilder: (context, index) {

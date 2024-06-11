@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
+import 'DownloadPDFPage.dart';
 import 'StudentPage.dart';
 import 'SubKompetensiPage.dart';
 
@@ -21,6 +22,7 @@ class MahasiswaAsesmenPage extends StatefulWidget {
 class _MahasiswaAsesmenPageState extends State<MahasiswaAsesmenPage> {
   late Future<List<Asesmen>> _asesmensFuture;
   var token = '';
+  String _user_id = '';
 
   Future<List<Asesmen>> getAsesmens(courseUUId) async {
     final token = await _loadUserToken(); // Mendapatkan token
@@ -46,6 +48,17 @@ class _MahasiswaAsesmenPageState extends State<MahasiswaAsesmenPage> {
     } else {
       throw Exception('Failed to load asesmen');
     }
+  }
+
+  @override
+  initState() {
+    super.initState();
+    _readUserFromStorage();
+  }
+
+  _readUserFromStorage() async {
+    const storage = FlutterSecureStorage();
+    _user_id = (await storage.read(key: 'user_id'))!;
   }
 
   _loadUserToken() async {
@@ -79,6 +92,7 @@ class _MahasiswaAsesmenPageState extends State<MahasiswaAsesmenPage> {
   }
 
   Widget buildAsesmenListView(List<Asesmen> asesmens) {
+    print(_user_id);
     return ListView.separated(
       itemCount: asesmens.length,
       itemBuilder: (context, index) {
@@ -89,8 +103,9 @@ class _MahasiswaAsesmenPageState extends State<MahasiswaAsesmenPage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) =>
-                      MahasiswaSubKompetensiPage(asesmen.uuid, asesmen.id)),
+                  builder: (context) => DownloadPDFPage(
+                      url:
+                          '${Api.host}/asesmen_summary_report/$_user_id/${asesmen.id!}')),
             );
           }, // Handle your onTap here.
         );
@@ -99,37 +114,6 @@ class _MahasiswaAsesmenPageState extends State<MahasiswaAsesmenPage> {
         // <-- SEE HERE
         return const Divider();
       },
-    );
-  }
-
-  Widget _buildAsesmenCard(
-      String title, String description, BuildContext context) {
-    return Card(
-      elevation: 5,
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const StudentPage()),
-          );
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(15),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-              Text(description),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

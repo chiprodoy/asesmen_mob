@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
+import 'DownloadPDFPage.dart';
+
 class MahasiswaCoursePage extends StatefulWidget {
   const MahasiswaCoursePage({super.key});
 
@@ -17,6 +19,7 @@ class MahasiswaCoursePage extends StatefulWidget {
 class _MahasiswaCoursePageState extends State<MahasiswaCoursePage> {
   Future<List<Course>> _coursesFuture = getCourses();
   var token = '';
+  var _user_id = '';
 
   static Future<List<Course>> getCourses() async {
     final token = await _loadUserToken(); // Mendapatkan token
@@ -46,6 +49,18 @@ class _MahasiswaCoursePageState extends State<MahasiswaCoursePage> {
     return accessToken;
   }
 
+  _readUserFromStorage() async {
+    const storage = FlutterSecureStorage();
+    _user_id = (await storage.read(key: 'user_id'))!;
+    print('_readUserFromStorage: $_user_id');
+  }
+
+  @override
+  initState() {
+    super.initState();
+    _readUserFromStorage();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,7 +76,7 @@ class _MahasiswaCoursePageState extends State<MahasiswaCoursePage> {
                 return const CircularProgressIndicator();
               } else if (snapshot.hasData) {
                 final courses = snapshot.data!;
-                return buildCourseListView(courses);
+                return buildCourseListView(courses, _user_id);
               } else {
                 return const Text("No data available");
               }
@@ -70,19 +85,21 @@ class _MahasiswaCoursePageState extends State<MahasiswaCoursePage> {
         ));
   }
 
-  Widget buildCourseListView(List<Course> courses) {
+  Widget buildCourseListView(List<Course> courses, userID) {
     return ListView.separated(
       itemCount: courses.length,
       itemBuilder: (context, index) {
         final course = courses[index];
+
         return ListTile(
           title: Text(course.namaMataKuliah!),
           onTap: () {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) =>
-                      MahasiswaAsesmenPage(courses[index].uuid)),
+                  builder: (context) => DownloadPDFPage(
+                      url:
+                          '${Api.host}/asesmen_summary_report/${userID}/${course.id!}')),
             );
           }, // Handle your onTap here.
         );
