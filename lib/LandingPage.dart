@@ -1,6 +1,11 @@
 import 'package:asesmen_ners/CoursePage.dart';
+import 'package:asesmen_ners/LoginPage.dart';
 import 'package:asesmen_ners/StudentPage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
+
+import 'Services/Api.dart';
 
 class LandingPage extends StatelessWidget {
   const LandingPage({super.key});
@@ -61,6 +66,9 @@ class LandingPage extends StatelessWidget {
                           ),
                         );
                       }),
+                      _buildCard(Icons.logout, ' Logout', () {
+                        return _logOut(context);
+                      }),
                     ],
                   ),
                 ),
@@ -93,6 +101,69 @@ class LandingPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  _logOut(BuildContext context) {
+    _signOut(context);
+    // Tindakan saat card import mahasiswa diklik
+
+    return Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const LoginPage(),
+      ),
+    );
+  }
+
+  Future<bool> _signOut(BuildContext context) async {
+    // Header untuk permintaan HTTP
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+
+    try {
+      // Mengirim permintaan POST ke API
+      http.Response response = await http.get(
+        Uri.parse('${Api.host}/logout'),
+        headers: headers,
+      );
+
+      // Memeriksa kode status respons
+      if (response.statusCode == 200) {
+        // Autentikasi berhasil, lakukan tindakan selanjutnya
+
+        const storage = FlutterSecureStorage();
+        await storage.deleteAll();
+        return true;
+      } else {
+        // Autentikasi gagal, tampilkan pesan kesalahan
+        return false;
+      }
+    } catch (error) {
+      print('Terjadi kesalahan: $error');
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return alert('Login gagal', 'Terjadi kesalahan: $error');
+        },
+      );
+      // Menangani kesalahan yang mungkin terjadi
+      return false;
+    }
+  }
+
+  AlertDialog alert(String title, String message) {
+    Widget okButton = TextButton(
+      child: Text("OK"),
+      onPressed: () {},
+    );
+    AlertDialog alert = AlertDialog(
+      title: Text(title),
+      content: Text(message),
+      actions: [okButton],
+    );
+    return alert;
   }
 }
 

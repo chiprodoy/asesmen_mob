@@ -1,5 +1,6 @@
 import 'dart:convert';
 //import 'package:asesmen_ners/KompetensiPage.dar';
+import 'package:asesmen_ners/Components/ComboBoxNilai.dart';
 import 'package:asesmen_ners/Model/Kompetensi.dart';
 import 'package:asesmen_ners/Model/NilaiSubKompetensi.dart';
 import 'package:asesmen_ners/Model/SubKompetensi.dart';
@@ -29,6 +30,7 @@ class _SubKompetensiPageState extends State<SubKompetensiPage> {
   String _pembimbingLapangan = '';
   List<dynamic>? _studentDatas; //edited line
   List<dynamic>? _dosenDatas; //edited line
+  List<String> selectedItemValue = [];
 
   var token = '';
 
@@ -281,59 +283,66 @@ class _SubKompetensiPageState extends State<SubKompetensiPage> {
       itemCount: subKompetensis.length,
       itemBuilder: (context, index) {
         final subKompetensi = subKompetensis[index];
+        selectedItemValue.add('1');
         return ListTile(
-          title: Text(subKompetensi.namaSubKompetensi!),
-          trailing: SizedBox(
-              width: 60,
-              child: DropdownButton<String>(
-                isExpanded: true,
-                items: <String>['0', '1', '2', '3', '4'].map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value, overflow: TextOverflow.ellipsis),
-                  );
-                }).toList(),
-                onChanged: (inputNilai) async {
-                  print('_selectedMhs: $_selectedMhs');
-                  print('subKompetensi id: ${subKompetensi.id}');
-                  print('inputNilai: $inputNilai');
-                  print('_pembimbingAkademik: $_pembimbingAkademik');
-                  print('_pembimbingLapangan: $_pembimbingLapangan');
-                  if (_selectedMhs.isEmpty) {
-                    AlertDialog alert = AlertDialog(
-                      title: const Text('Pilih Mahasiswa'),
-                      content: const Text(
-                          'Mahasiswa Belum dipilih, pilih mahasiswa terlebih dahulu'),
-                      actions: <Widget>[
-                        TextButton(
-                          child: Text('Ok'),
-                          onPressed: () =>
-                              Navigator.of(context, rootNavigator: true).pop(),
-                        ),
-                      ],
+            title: Text(subKompetensi.namaSubKompetensi!),
+            trailing: SizedBox(
+                width: 60,
+                child: DropdownButton<String>(
+                  value: selectedItemValue[index],
+                  isExpanded: true,
+                  items: <String>['0', '1', '2', '3', '4'].map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value, overflow: TextOverflow.ellipsis),
                     );
-                    showDialog(context: context, builder: (context) => alert);
-                    return;
-                  } else {
-                    NilaiSubKompetensi nilai = NilaiSubKompetensi(
-                        1,
-                        subKompetensi.id,
-                        subKompetensi.uuid,
-                        int.parse(_selectedMhs),
-                        1,
-                        int.parse(inputNilai!),
-                        _pembimbingAkademik,
-                        _pembimbingLapangan);
-                    bool nilaiHasStored = await nilai.store();
-                    if (nilaiHasStored) {
-                      const SnackBar(content: Text('Data Berhasil Disimpan'));
+                  }).toList(),
+                  onChanged: (inputNilai) async {
+                    print('_selectedMhs: $_selectedMhs');
+                    print('subKompetensi id: ${subKompetensi.id}');
+                    print('inputNilai: $inputNilai');
+                    print('_pembimbingAkademik: $_pembimbingAkademik');
+                    print('_pembimbingLapangan: $_pembimbingLapangan');
+                    if (_selectedMhs.isEmpty) {
+                      AlertDialog alert = AlertDialog(
+                        title: const Text('Pilih Mahasiswa'),
+                        content: const Text(
+                            'Mahasiswa Belum dipilih, pilih mahasiswa terlebih dahulu'),
+                        actions: <Widget>[
+                          TextButton(
+                            child: Text('Ok'),
+                            onPressed: () =>
+                                Navigator.of(context, rootNavigator: true)
+                                    .pop(),
+                          ),
+                        ],
+                      );
+                      showDialog(context: context, builder: (context) => alert);
+                      return;
                     } else {
-                      const SnackBar(content: Text('Data Gagal Disimpan'));
+                      NilaiSubKompetensi nilai = NilaiSubKompetensi(
+                          1,
+                          subKompetensi.id,
+                          subKompetensi.uuid,
+                          int.parse(_selectedMhs),
+                          1,
+                          int.parse(inputNilai!),
+                          _pembimbingAkademik,
+                          _pembimbingLapangan);
+                      bool nilaiHasStored = await nilai.store();
+                      if (nilaiHasStored) {
+                        const SnackBar(content: Text('Data Berhasil Disimpan'));
+                      } else {
+                        const SnackBar(content: Text('Data Gagal Disimpan'));
+                      }
+
+                      setState(() {
+                        selectedItemValue[index] = inputNilai;
+                        print('x: ${index} and ${inputNilai}');
+                      });
                     }
-                  }
-                },
-              )),
-        );
+                  },
+                )));
       },
       separatorBuilder: (context, index) {
         // <-- SEE HERE

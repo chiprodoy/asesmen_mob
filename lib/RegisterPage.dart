@@ -223,19 +223,17 @@ class _LoginFormState extends State<LoginForm> {
                         dosen.password = _password;
                         var isStoreSuccess = await dosen.store();
                         if (isStoreSuccess) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Pendaftaran berhasil')),
-                          );
+                          _dialogBuilder(
+                              context, 'Pendaftaran', 'Pendaftaran Berhasil');
+
                           // Navigator.push(
                           //   context,
                           //   MaterialPageRoute(
                           //       builder: (context) => const LoginPage()),
                           // );
                         } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Pendaftaran Gagal')),
-                          );
+                          _dialogBuilder(
+                              context, 'Pendaftaran', 'Pendaftaran Gagal');
                         }
 
                         // Lakukan autentikasi atau tindakan lain di sini
@@ -260,6 +258,37 @@ class _LoginFormState extends State<LoginForm> {
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _dialogBuilder(BuildContext context, titleMsg, textMsg,
+      {String type = 'success'}) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(titleMsg),
+          content: Text(textMsg),
+          actions: <Widget>[
+            TextButton(
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(context).textTheme.labelLarge,
+              ),
+              child: const Text('Ok'),
+              onPressed: () {
+                if (type == 'success') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginPage()),
+                  );
+                } else {
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
