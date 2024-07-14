@@ -1,6 +1,7 @@
 import 'package:asesmen_ners/CoursePage.dart';
 import 'package:asesmen_ners/LoginPage.dart';
 import 'package:asesmen_ners/MahasiswaCoursePage.dart';
+import 'package:asesmen_ners/MahasiswaProfilPage.dart';
 import 'package:asesmen_ners/StudentPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -52,6 +53,15 @@ class MahasiswaLandingPage extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (context) => const MahasiswaCoursePage(),
+                          ),
+                        );
+                      }),
+                      _buildCard(Icons.manage_accounts, ' Profil', () {
+                        // Tindakan saat card import mahasiswa diklik
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MahasiswaProfilPage(),
                           ),
                         );
                       }),

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
+import 'ProfilPage.dart';
 import 'Services/Api.dart';
 
 class LandingPage extends StatelessWidget {
@@ -63,6 +64,15 @@ class LandingPage extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (context) => const StudentPage(),
+                          ),
+                        );
+                      }),
+                      _buildCard(Icons.manage_accounts, ' Profil', () {
+                        // Tindakan saat card import mahasiswa diklik
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProfilPage(),
                           ),
                         );
                       }),

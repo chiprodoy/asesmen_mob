@@ -65,7 +65,7 @@ class _LoginFormState extends State<LoginForm> {
           _pageRoute =
               MaterialPageRoute(builder: (context) => const LandingPage());
         });
-        print('landingpage');
+        //print('landingpage');
       } else if (value == 'mahasiswa') {
         setState(() {
           _pageRoute = MaterialPageRoute(
@@ -110,8 +110,8 @@ class _LoginFormState extends State<LoginForm> {
       // Memeriksa kode status respons
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
-        print(data['data']['token']);
-        print(data['data']['user  ']);
+        // print(data['data']['token']);
+        // print(data['data']['user  ']);
 
         // Autentikasi berhasil, lakukan tindakan selanjutnya
 
@@ -122,7 +122,7 @@ class _LoginFormState extends State<LoginForm> {
         await storage.write(
             key: 'role_name',
             value: data['data']['user']['roles'][0]['role_name']);
-        print(await storage.readAll());
+        //print(await storage.readAll());
 
         return true;
       } else {
