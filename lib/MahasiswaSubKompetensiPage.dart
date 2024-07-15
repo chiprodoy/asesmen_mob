@@ -1,7 +1,5 @@
 import 'dart:convert';
 //import 'package:asesmen_ners/KompetensiPage.dar';
-import 'package:asesmen_ners/Components/ComboBoxNilai.dart';
-import 'package:asesmen_ners/Model/Kompetensi.dart';
 import 'package:asesmen_ners/Model/NilaiSubKompetensi.dart';
 import 'package:asesmen_ners/Model/SubKompetensi.dart';
 import 'package:asesmen_ners/Services/Api.dart';
@@ -12,17 +10,19 @@ import 'package:http/http.dart' as http;
 
 import 'DownloadPDFPage.dart';
 
-class SubKompetensiPage extends StatefulWidget {
+class MahasiswaSubKompetensiPage extends StatefulWidget {
   final String? kompetensiUUID;
   final int? asesmenID;
   // final Kompetensi kompetensi;
-  const SubKompetensiPage(this.kompetensiUUID, this.asesmenID);
+  const MahasiswaSubKompetensiPage(this.kompetensiUUID, this.asesmenID);
 
   @override
-  _SubKompetensiPageState createState() => _SubKompetensiPageState();
+  _MahasiswaSubKompetensiPageState createState() =>
+      _MahasiswaSubKompetensiPageState();
 }
 
-class _SubKompetensiPageState extends State<SubKompetensiPage> {
+class _MahasiswaSubKompetensiPageState
+    extends State<MahasiswaSubKompetensiPage> {
   late Future<List<SubKompetensi>> _subKompetensisFuture;
   String _selectedMhs = '';
   String _selectedDosen = '';
@@ -30,7 +30,6 @@ class _SubKompetensiPageState extends State<SubKompetensiPage> {
   String _pembimbingLapangan = '';
   List<dynamic>? _studentDatas; //edited line
   List<dynamic>? _dosenDatas; //edited line
-  List<String> selectedItemValue = [];
 
   var token = '';
 
@@ -118,32 +117,6 @@ class _SubKompetensiPageState extends State<SubKompetensiPage> {
     }
   }
 
-  Future<List<Kompetensi>> getKompetensis() async {
-    final token = await _loadUserToken(); // Mendapatkan token
-    // Header untuk permintaan HTTP
-    Map<String, String> headers = {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': 'Bearer $token',
-    };
-    // print(headers);
-    print('assid: ${widget.asesmenID!}');
-    print('${Api.host}/kompetensi/${widget.asesmenID}');
-
-    final response = await http.get(
-        Uri.parse('${Api.host}/kompetensi/${widget.asesmenID}'),
-        headers: headers);
-
-    if (response.statusCode == 200) {
-      var res = json.decode(response.body);
-//      print(res['data']);
-      final List data = res['data'];
-      return data.map((e) => Kompetensi.fromJson(e)).toList();
-    } else {
-      throw Exception('Failed to load asesmen');
-    }
-  }
-
   _loadUserToken() async {
     const storage = FlutterSecureStorage();
     final accessToken = await storage.read(key: 'access_token');
@@ -161,7 +134,6 @@ class _SubKompetensiPageState extends State<SubKompetensiPage> {
             child: Column(
               children: <Widget>[
                 Column(
-
                     // set the height of the header container as needed
                     children: <Widget>[
                       dropDownMahasiswa(),
@@ -170,8 +142,8 @@ class _SubKompetensiPageState extends State<SubKompetensiPage> {
                       //Text(widget.kompetensi.namaKompetensi!)
                     ]),
                 Expanded(
-                  child: FutureBuilder<List<Kompetensi>>(
-                    future: getKompetensis(),
+                  child: FutureBuilder<List<SubKompetensi>>(
+                    future: getSubKompetensis(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const SizedBox(
@@ -181,9 +153,7 @@ class _SubKompetensiPageState extends State<SubKompetensiPage> {
                         );
                       } else if (snapshot.hasData) {
                         final datas = snapshot.data!;
-                        print('future');
-                        print(datas);
-                        return buildKompetensiListView(datas);
+                        return buildSubKompetensiListView(datas);
                       } else {
                         return const Text("No data available");
                       }
@@ -215,20 +185,8 @@ class _SubKompetensiPageState extends State<SubKompetensiPage> {
   }
 
   Widget dropDownMahasiswa() {
-    return DropdownButton(
-      hint: const Text('Pilih Mahasiswa'),
-      isExpanded: true,
-      items: _studentDatas?.map((item) {
-        return DropdownMenuItem(
-            value: item['id'].toString(),
-            child: Text('${item['npm']} - ${item['nama']}'));
-      }).toList(),
-      onChanged: (newVal) {
-        setState(() {
-          _selectedMhs = newVal!;
-        });
-      },
-      value: _selectedMhs.isEmpty ? null : _selectedMhs,
+    return Column(
+      children: [Text('Pembimbing 1 :')],
     );
   }
 
@@ -254,28 +212,6 @@ class _SubKompetensiPageState extends State<SubKompetensiPage> {
         ));
   }
 
-  Widget buildKompetensiListView(List<Kompetensi> kompetensis) {
-    return ListView.separated(
-        separatorBuilder: (BuildContext context, int index) {
-          return const Divider(color: Colors.amber);
-        },
-        physics: const ScrollPhysics(),
-        itemCount: kompetensis.length,
-        itemBuilder: (context, index) {
-          final kompetensi = kompetensis[index];
-          return Column(
-            children: [
-              ListTile(
-                //tileColor: Colors.grey,
-                title: Text(kompetensi.namaKompetensi!,
-                    style: const TextStyle(fontWeight: FontWeight.bold)),
-              ),
-              buildSubKompetensiListView(kompetensi.subKompetensi!.toList())
-            ],
-          );
-        });
-  }
-
   Widget buildSubKompetensiListView(List<SubKompetensi> subKompetensis) {
     return ListView.separated(
       physics: const ScrollPhysics(),
@@ -283,20 +219,18 @@ class _SubKompetensiPageState extends State<SubKompetensiPage> {
       itemCount: subKompetensis.length,
       itemBuilder: (context, index) {
         final subKompetensi = subKompetensis[index];
-        selectedItemValue.add('1');
         return ListTile(
-            title: Text(subKompetensi.namaSubKompetensi!),
-            trailing: SizedBox(
-                width: 60,
-                child: DropdownButton<String>(
-                  value: selectedItemValue[index],
-                  isExpanded: true,
-                  items: <String>['0', '1', '2', '3', '4'].map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value, overflow: TextOverflow.ellipsis),
-                    );
-                  }).toList(),
+          title: Text(subKompetensi.namaSubKompetensi!),
+          trailing: SizedBox(
+              width: 30,
+              child: TextField(
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    // for below version 2 use this
+                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+// for version 2 and greater youcan also use this
+                    FilteringTextInputFormatter.digitsOnly
+                  ],
                   onChanged: (inputNilai) async {
                     print('_selectedMhs: $_selectedMhs');
                     print('subKompetensi id: ${subKompetensi.id}');
@@ -326,7 +260,7 @@ class _SubKompetensiPageState extends State<SubKompetensiPage> {
                           subKompetensi.uuid,
                           int.parse(_selectedMhs),
                           1,
-                          int.parse(inputNilai!),
+                          int.parse(inputNilai),
                           _pembimbingAkademik,
                           _pembimbingLapangan);
                       bool nilaiHasStored = await nilai.store();
@@ -335,14 +269,13 @@ class _SubKompetensiPageState extends State<SubKompetensiPage> {
                       } else {
                         const SnackBar(content: Text('Data Gagal Disimpan'));
                       }
-
-                      setState(() {
-                        selectedItemValue[index] = inputNilai;
-                        print('x: ${index} and ${inputNilai}');
-                      });
                     }
                   },
-                )));
+                  decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      isDense: true, // Added this
+                      contentPadding: EdgeInsets.all(8)))),
+        );
       },
       separatorBuilder: (context, index) {
         // <-- SEE HERE

@@ -1,5 +1,6 @@
 import 'package:asesmen_ners/LandingPage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'LoginPage.dart';
@@ -69,15 +70,21 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _checkIfLoggedIn() async {
-    SharedPreferences localStorage = await SharedPreferences.getInstance();
-    var token = localStorage.getString('access_token');
-    if (token != null) {
-      if (mounted) {
-        setState(() {
-          isAuth = true;
-        });
-      }
-    }
+    //  SharedPreferences localStorage = await SharedPreferences.getInstance();
+    //  var token = localStorage.getString('access_token');
+    // final storage = new FlutterSecureStorage();
+    // // Read value
+    // String? token = '';
+    // await Future.sync(
+    //     () async => token = await storage.read(key: 'access_token'));
+
+    // if (token.isNotEmpty) {
+    //   if (mounted) {
+    //     setState(() {
+    //       isAuth = true;
+    //     });
+    //   }
+    // }
   }
 
   @override

@@ -1,16 +1,14 @@
 import 'package:asesmen_ners/CoursePage.dart';
-import 'package:asesmen_ners/DosenChangePasswordPage.dart';
 import 'package:asesmen_ners/LoginPage.dart';
+import 'package:asesmen_ners/MahasiswaChangePasswordPage.dart';
+import 'package:asesmen_ners/MahasiswaCoursePage.dart';
+import 'package:asesmen_ners/MahasiswaProfilPage.dart';
 import 'package:asesmen_ners/StudentPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:http/http.dart' as http;
 
-import 'ProfilPage.dart';
-import 'Services/Api.dart';
-
-class LandingPage extends StatelessWidget {
-  const LandingPage({super.key});
+class MahasiswaLandingPage extends StatelessWidget {
+  const MahasiswaLandingPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -50,21 +48,12 @@ class LandingPage extends StatelessWidget {
                     mainAxisSpacing: 20,
                     crossAxisSpacing: 20,
                     children: [
-                      _buildCard(Icons.rate_review, 'Form Penilaian', () {
+                      _buildCard(Icons.rate_review, 'Hasil Penilaian', () {
                         // Tindakan saat card form penilaian diklik
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const CoursePage(),
-                          ),
-                        );
-                      }),
-                      _buildCard(Icons.people, ' Mahasiswa', () {
-                        // Tindakan saat card import mahasiswa diklik
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const StudentPage(),
+                            builder: (context) => const MahasiswaCoursePage(),
                           ),
                         );
                       }),
@@ -73,7 +62,7 @@ class LandingPage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ProfilPage(),
+                            builder: (context) => MahasiswaProfilPage(),
                           ),
                         );
                       }),
@@ -82,12 +71,20 @@ class LandingPage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => DosenChangePasswordPage(),
+                            builder: (context) => MahasiswaChangePasswordPage(),
                           ),
                         );
                       }),
                       _buildCard(Icons.logout, ' Logout', () {
-                        return _logOut(context);
+                        const storage = FlutterSecureStorage();
+                        storage.deleteAll();
+                        // Tindakan saat card import mahasiswa diklik
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LoginPage(),
+                          ),
+                        );
                       }),
                     ],
                   ),
@@ -121,69 +118,6 @@ class LandingPage extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  _logOut(BuildContext context) {
-    _signOut(context);
-    // Tindakan saat card import mahasiswa diklik
-
-    return Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const LoginPage(),
-      ),
-    );
-  }
-
-  Future<bool> _signOut(BuildContext context) async {
-    // Header untuk permintaan HTTP
-    Map<String, String> headers = {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    };
-
-    try {
-      // Mengirim permintaan POST ke API
-      http.Response response = await http.get(
-        Uri.parse('${Api.host}/logout'),
-        headers: headers,
-      );
-
-      // Memeriksa kode status respons
-      if (response.statusCode == 200) {
-        // Autentikasi berhasil, lakukan tindakan selanjutnya
-
-        const storage = FlutterSecureStorage();
-        await storage.deleteAll();
-        return true;
-      } else {
-        // Autentikasi gagal, tampilkan pesan kesalahan
-        return false;
-      }
-    } catch (error) {
-      print('Terjadi kesalahan: $error');
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return alert('Login gagal', 'Terjadi kesalahan: $error');
-        },
-      );
-      // Menangani kesalahan yang mungkin terjadi
-      return false;
-    }
-  }
-
-  AlertDialog alert(String title, String message) {
-    Widget okButton = TextButton(
-      child: Text("OK"),
-      onPressed: () {},
-    );
-    AlertDialog alert = AlertDialog(
-      title: Text(title),
-      content: Text(message),
-      actions: [okButton],
-    );
-    return alert;
   }
 }
 
