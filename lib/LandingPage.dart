@@ -1,4 +1,5 @@
 import 'package:asesmen_ners/CoursePage.dart';
+import 'package:asesmen_ners/DosenChangePasswordPage.dart';
 import 'package:asesmen_ners/LoginPage.dart';
 import 'package:asesmen_ners/StudentPage.dart';
 import 'package:flutter/material.dart';
@@ -73,6 +74,15 @@ class LandingPage extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (context) => ProfilPage(),
+                          ),
+                        );
+                      }),
+                      _buildCard(Icons.manage_accounts, ' Ganti Password', () {
+                        // Tindakan saat card import mahasiswa diklik
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DosenChangePasswordPage(),
                           ),
                         );
                       }),

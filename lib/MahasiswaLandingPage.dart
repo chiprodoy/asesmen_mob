@@ -1,5 +1,6 @@
 import 'package:asesmen_ners/CoursePage.dart';
 import 'package:asesmen_ners/LoginPage.dart';
+import 'package:asesmen_ners/MahasiswaChangePasswordPage.dart';
 import 'package:asesmen_ners/MahasiswaCoursePage.dart';
 import 'package:asesmen_ners/MahasiswaProfilPage.dart';
 import 'package:asesmen_ners/StudentPage.dart';
@@ -62,6 +63,15 @@ class MahasiswaLandingPage extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (context) => MahasiswaProfilPage(),
+                          ),
+                        );
+                      }),
+                      _buildCard(Icons.manage_accounts, ' Ganti Password', () {
+                        // Tindakan saat card import mahasiswa diklik
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MahasiswaChangePasswordPage(),
                           ),
                         );
                       }),
