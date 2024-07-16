@@ -52,34 +52,6 @@ class _StudentEditPageState extends State<StudentEditPage> {
     _teleponController.text = widget.telepon;
   }
 
-  Future<List<Mahasiswa>> getStudents() async {
-    final token = await _loadUserToken(); // Mendapatkan token
-    // Header untuk permintaan HTTP
-    Map<String, String> headers = {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': 'Bearer $token',
-    };
-
-    final response =
-        await http.get(Uri.parse('${Api.host}/mahasiswa'), headers: headers);
-
-    if (response.statusCode == 200) {
-      var res = json.decode(response.body);
-      print(res['data']);
-      final List data = res['data'];
-      return data.map((e) => Mahasiswa.fromJson(e)).toList();
-    } else {
-      throw Exception('Failed to load asesmen');
-    }
-  }
-
-  _loadUserToken() async {
-    const storage = FlutterSecureStorage();
-    final accessToken = await storage.read(key: 'access_token');
-    return accessToken;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -150,24 +122,6 @@ class _StudentEditPageState extends State<StudentEditPage> {
             ),
           ),
         ));
-  }
-
-  Widget buildStudentListView(List<Mahasiswa> mahasiswas) {
-    return ListView.separated(
-      physics: const ScrollPhysics(),
-      shrinkWrap: true,
-      itemCount: mahasiswas.length,
-      itemBuilder: (context, index) {
-        final mahasiswa = mahasiswas[index];
-        return ListTile(
-          title: Text(mahasiswa.nama!),
-        );
-      },
-      separatorBuilder: (context, index) {
-        // <-- SEE HERE
-        return const Divider();
-      },
-    );
   }
 
   Future<void> _submitForm() async {

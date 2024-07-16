@@ -86,7 +86,7 @@ class Mahasiswa {
       'Authorization': 'Bearer $token',
     };
     // print(headers);
-    print('${Api.host}/mahasiswa');
+    print('${Api.host}/mahasiswa/${this.id}');
     print(
         'npm: ${this.npm} nama: ${this.nama}, telepon: ${this.telepon},email: ${this.email}');
 
