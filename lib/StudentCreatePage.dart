@@ -19,6 +19,7 @@ class StudentCreatePage extends StatefulWidget {
 class _StudentCreatePageState extends State<StudentCreatePage> {
   final GlobalKey<FormState> _formKey =
       GlobalKey<FormState>(); // A key for managing the form
+  int _id = 0;
   String _nama = '';
   String _npm = '';
   String _telepon = '';
@@ -164,7 +165,7 @@ class _StudentCreatePageState extends State<StudentCreatePage> {
     // Check if the form is valid
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save(); // Save the form data
-      Mahasiswa mahasiswa = Mahasiswa(_npm, _nama, _telepon, _email);
+      Mahasiswa mahasiswa = Mahasiswa(_id, _npm, _nama, _telepon, _email);
       if (await mahasiswa.store()) {
         AlertDialog alert = AlertDialog(
           title: const Text('Berhasil'),

@@ -127,6 +127,7 @@ class _StudentPageState extends State<StudentPage> {
               context,
               MaterialPageRoute(
                 builder: (context) => StudentEditPage(
+                  id: mahasiswa.id.toString(),
                   npm: mahasiswa.npm!,
                   nama: mahasiswa.nama!,
                   telepon: mahasiswa.telepon!,

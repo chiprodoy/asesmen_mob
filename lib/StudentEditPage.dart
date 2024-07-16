@@ -12,9 +12,11 @@ class StudentEditPage extends StatefulWidget {
   final String npm;
   final String telepon;
   final String email;
+  final id;
 
   const StudentEditPage(
       {super.key,
+      required this.id,
       required this.npm,
       required this.nama,
       required this.email,
@@ -33,6 +35,7 @@ class _StudentEditPageState extends State<StudentEditPage> {
   final TextEditingController _npmController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _teleponController = TextEditingController();
+  final TextEditingController _userID = TextEditingController();
 
   late Future<List<Mahasiswa>> _mahasiswaFuture;
   List<dynamic>? _studentDatas; //edited line
@@ -42,6 +45,7 @@ class _StudentEditPageState extends State<StudentEditPage> {
   @override
   void initState() {
     super.initState();
+    _userID.text = widget.id;
     _npmController.text = widget.npm;
     _nameController.text = widget.nama;
     _emailController.text = widget.email;
@@ -171,10 +175,14 @@ class _StudentEditPageState extends State<StudentEditPage> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save(); // Save the form data
 
-      Mahasiswa mahasiswa = Mahasiswa(_npmController.text, _nameController.text,
-          _teleponController.text, _emailController.text);
+      Mahasiswa mahasiswa = Mahasiswa(
+          int.parse(_userID.text),
+          _npmController.text,
+          _nameController.text,
+          _teleponController.text,
+          _emailController.text);
 
-      if (await mahasiswa.store()) {
+      if (await mahasiswa.update()) {
         AlertDialog alert = AlertDialog(
           title: const Text('Berhasil'),
           content: const Text('Mahasiswa Berhasil disimpan'),
