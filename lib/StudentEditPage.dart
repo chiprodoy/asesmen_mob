@@ -7,23 +7,35 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
-class StudentCreatePage extends StatefulWidget {
-  const StudentCreatePage({super.key});
+class StudentEditPage extends StatefulWidget {
+  final String nama;
+  final String npm;
+  final String telepon;
+  final String email;
+  final id;
+
+  const StudentEditPage(
+      {super.key,
+      required this.id,
+      required this.npm,
+      required this.nama,
+      required this.email,
+      required this.telepon});
 
   // final Kompetensi kompetensi;
 
   @override
-  _StudentCreatePageState createState() => _StudentCreatePageState();
+  _StudentEditPageState createState() => _StudentEditPageState();
 }
 
-class _StudentCreatePageState extends State<StudentCreatePage> {
-  final GlobalKey<FormState> _formKey =
-      GlobalKey<FormState>(); // A key for managing the form
-  int _id = 0;
-  String _nama = '';
-  String _npm = '';
-  String _telepon = '';
-  String _email = '';
+class _StudentEditPageState extends State<StudentEditPage> {
+  // A key for managing the form
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _npmController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _teleponController = TextEditingController();
+  final TextEditingController _userID = TextEditingController();
 
   late Future<List<Mahasiswa>> _mahasiswaFuture;
   List<dynamic>? _studentDatas; //edited line
@@ -33,34 +45,11 @@ class _StudentCreatePageState extends State<StudentCreatePage> {
   @override
   void initState() {
     super.initState();
-  }
-
-  Future<List<Mahasiswa>> getStudents() async {
-    final token = await _loadUserToken(); // Mendapatkan token
-    // Header untuk permintaan HTTP
-    Map<String, String> headers = {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': 'Bearer $token',
-    };
-
-    final response =
-        await http.get(Uri.parse('${Api.host}/mahasiswa'), headers: headers);
-
-    if (response.statusCode == 200) {
-      var res = json.decode(response.body);
-      print(res['data']);
-      final List data = res['data'];
-      return data.map((e) => Mahasiswa.fromJson(e)).toList();
-    } else {
-      throw Exception('Failed to load asesmen');
-    }
-  }
-
-  _loadUserToken() async {
-    const storage = FlutterSecureStorage();
-    final accessToken = await storage.read(key: 'access_token');
-    return accessToken;
+    _userID.text = widget.id;
+    _npmController.text = widget.npm;
+    _nameController.text = widget.nama;
+    _emailController.text = widget.email;
+    _teleponController.text = widget.telepon;
   }
 
   @override
@@ -83,9 +72,7 @@ class _StudentCreatePageState extends State<StudentCreatePage> {
                     }
                     return null; // Return null if the name is valid
                   },
-                  onSaved: (value) {
-                    _nama = value!; // Save the entered name
-                  },
+                  controller: _nameController,
                 ),
                 TextFormField(
                   decoration: const InputDecoration(
@@ -97,9 +84,7 @@ class _StudentCreatePageState extends State<StudentCreatePage> {
                     }
                     return null; // Return null if the name is valid
                   },
-                  onSaved: (value) {
-                    _npm = value!; // Save the entered name
-                  },
+                  controller: _npmController,
                 ),
                 TextFormField(
                   decoration: const InputDecoration(
@@ -112,9 +97,7 @@ class _StudentCreatePageState extends State<StudentCreatePage> {
                     // You can add more complex validation logic here
                     return null; // Return null if the email is valid
                   },
-                  onSaved: (value) {
-                    _email = value!; // Save the entered email
-                  },
+                  controller: _emailController,
                 ),
                 TextFormField(
                   decoration: const InputDecoration(
@@ -127,9 +110,7 @@ class _StudentCreatePageState extends State<StudentCreatePage> {
                     // You can add more complex validation logic here
                     return null; // Return null if the email is valid
                   },
-                  onSaved: (value) {
-                    _telepon = value!; // Save the entered email
-                  },
+                  controller: _teleponController,
                 ),
                 SizedBox(height: 20.0),
                 ElevatedButton(
@@ -143,30 +124,19 @@ class _StudentCreatePageState extends State<StudentCreatePage> {
         ));
   }
 
-  Widget buildStudentListView(List<Mahasiswa> mahasiswas) {
-    return ListView.separated(
-      physics: const ScrollPhysics(),
-      shrinkWrap: true,
-      itemCount: mahasiswas.length,
-      itemBuilder: (context, index) {
-        final mahasiswa = mahasiswas[index];
-        return ListTile(
-          title: Text(mahasiswa.nama!),
-        );
-      },
-      separatorBuilder: (context, index) {
-        // <-- SEE HERE
-        return const Divider();
-      },
-    );
-  }
-
   Future<void> _submitForm() async {
     // Check if the form is valid
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save(); // Save the form data
-      Mahasiswa mahasiswa = Mahasiswa(_id, _npm, _nama, _telepon, _email);
-      if (await mahasiswa.store()) {
+
+      Mahasiswa mahasiswa = Mahasiswa(
+          int.parse(_userID.text),
+          _npmController.text,
+          _nameController.text,
+          _teleponController.text,
+          _emailController.text);
+
+      if (await mahasiswa.update()) {
         AlertDialog alert = AlertDialog(
           title: const Text('Berhasil'),
           content: const Text('Mahasiswa Berhasil disimpan'),
