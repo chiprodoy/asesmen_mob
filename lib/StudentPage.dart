@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:asesmen_ners/Model/Mahasiswa.dart';
 import 'package:asesmen_ners/Services/Api.dart';
 import 'package:asesmen_ners/StudentCreatePage.dart';
+import 'package:asesmen_ners/StudentEditPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -19,8 +20,8 @@ class StudentPage extends StatefulWidget {
 class _StudentPageState extends State<StudentPage> {
   late Future<List<Mahasiswa>> _mahasiswaFuture;
   List<dynamic>? _studentDatas; //edited line
-
   var token = '';
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -45,7 +46,7 @@ class _StudentPageState extends State<StudentPage> {
       final List data = res['data'];
       return data.map((e) => Mahasiswa.fromJson(e)).toList();
     } else {
-      throw Exception('Failed to load asesmen');
+      throw Exception('Failed to load mahasiswa');
     }
   }
 
@@ -64,23 +65,7 @@ class _StudentPageState extends State<StudentPage> {
             child: Column(
               children: <Widget>[
                 Expanded(
-                  child: FutureBuilder<List<Mahasiswa>>(
-                    future: getStudents(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const SizedBox(
-                          height: 5.0,
-                          width: 5.0,
-                          child: Center(child: CircularProgressIndicator()),
-                        );
-                      } else if (snapshot.hasData) {
-                        final datas = snapshot.data!;
-                        return buildStudentListView(datas);
-                      } else {
-                        return const Text("No data available");
-                      }
-                    },
-                  ),
+                  child: buildMahasiswaFuture(),
                 ),
                 Column(
                   children: [
@@ -102,6 +87,26 @@ class _StudentPageState extends State<StudentPage> {
             )));
   }
 
+  FutureBuilder buildMahasiswaFuture() {
+    return FutureBuilder<List<Mahasiswa>>(
+      future: getStudents(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SizedBox(
+            height: 5.0,
+            width: 5.0,
+            child: Center(child: CircularProgressIndicator()),
+          );
+        } else if (snapshot.hasData) {
+          final datas = snapshot.data!;
+          return buildStudentListView(datas);
+        } else {
+          return const Text("No data available");
+        }
+      },
+    );
+  }
+
   Widget buildStudentListView(List<Mahasiswa> mahasiswas) {
     return ListView.separated(
       physics: const ScrollPhysics(),
@@ -111,6 +116,25 @@ class _StudentPageState extends State<StudentPage> {
         final mahasiswa = mahasiswas[index];
         return ListTile(
           title: Text(mahasiswa.nama!),
+          onTap: () {
+            print('list view on tap:');
+            print('npm ${mahasiswa.npm}');
+            print('nama ${mahasiswa.nama}');
+            print('telepon ${mahasiswa.telepon}');
+            print('email ${mahasiswa.email}');
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => StudentEditPage(
+                  npm: mahasiswa.npm!,
+                  nama: mahasiswa.nama!,
+                  telepon: mahasiswa.telepon!,
+                  email: mahasiswa.email!,
+                ),
+              ),
+            );
+          },
         );
       },
       separatorBuilder: (context, index) {

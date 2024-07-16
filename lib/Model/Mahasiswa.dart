@@ -19,6 +19,9 @@ class Mahasiswa {
     id = json['id'];
     uuid = json['uuid'];
     nama = json['nama'];
+    npm = json['npm'];
+    telepon = json['user']['telepon'];
+    email = json['user']['email'];
   }
 
   _loadUserToken() async {
