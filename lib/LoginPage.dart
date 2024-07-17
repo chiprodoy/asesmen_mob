@@ -26,7 +26,9 @@ class LoginPage extends StatelessWidget {
             ),
           ),
           child: const Center(
-            child: LoginForm(),
+            child: SingleChildScrollView(
+              child: LoginForm(),
+            ),
           ),
         ),
       ),

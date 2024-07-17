@@ -1,5 +1,6 @@
 import 'dart:convert';
 //import 'package:asesmen_ners/KompetensiPage.dar';
+import 'package:asesmen_ners/LoginPage.dart';
 import 'package:asesmen_ners/Model/Mahasiswa.dart';
 import 'package:asesmen_ners/Services/Api.dart';
 import 'package:asesmen_ners/StudentPage.dart';
@@ -33,6 +34,20 @@ class _StudentCreatePageState extends State<StudentCreatePage> {
   @override
   void initState() {
     super.initState();
+    _isAuthenticated();
+  }
+
+  _isAuthenticated() async {
+    const storage = FlutterSecureStorage();
+    final accessToken = await storage.read(key: 'access_token');
+    final role = await storage.read(key: 'role_name');
+
+    if (role != 'dosen') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+      );
+    }
   }
 
   Future<List<Mahasiswa>> getStudents() async {

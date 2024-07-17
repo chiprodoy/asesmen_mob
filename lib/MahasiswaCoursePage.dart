@@ -8,6 +8,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 import 'DownloadPDFPage.dart';
+import 'LoginPage.dart';
 
 class MahasiswaCoursePage extends StatefulWidget {
   const MahasiswaCoursePage({super.key});
@@ -59,6 +60,20 @@ class _MahasiswaCoursePageState extends State<MahasiswaCoursePage> {
   initState() {
     super.initState();
     _readUserFromStorage();
+    _isAuthenticated();
+  }
+
+  _isAuthenticated() async {
+    const storage = FlutterSecureStorage();
+    final accessToken = await storage.read(key: 'access_token');
+    final role = await storage.read(key: 'role_name');
+
+    if (role != 'mahasiswa') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+      );
+    }
   }
 
   @override

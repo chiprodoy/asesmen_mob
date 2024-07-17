@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
+import 'LoginPage.dart';
+
 class StudentEditPage extends StatefulWidget {
   final String nama;
   final String npm;
@@ -50,6 +52,20 @@ class _StudentEditPageState extends State<StudentEditPage> {
     _nameController.text = widget.nama;
     _emailController.text = widget.email;
     _teleponController.text = widget.telepon;
+    _isAuthenticated();
+  }
+
+  _isAuthenticated() async {
+    const storage = FlutterSecureStorage();
+    final accessToken = await storage.read(key: 'access_token');
+    final role = await storage.read(key: 'role_name');
+
+    if (role != 'dosen') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+      );
+    }
   }
 
   @override

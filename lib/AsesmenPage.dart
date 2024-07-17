@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
+import 'LoginPage.dart';
 import 'StudentPage.dart';
 import 'SubKompetensiPage.dart';
 
@@ -20,6 +21,25 @@ class AsesmenPage extends StatefulWidget {
 class _AsesmenPageState extends State<AsesmenPage> {
   late Future<List<Asesmen>> _asesmensFuture;
   var token = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _isAuthenticated();
+  }
+
+  _isAuthenticated() async {
+    const storage = FlutterSecureStorage();
+    final accessToken = await storage.read(key: 'access_token');
+    final role = await storage.read(key: 'role_name');
+
+    if (role != 'dosen') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+      );
+    }
+  }
 
   Future<List<Asesmen>> getAsesmens(courseUUId) async {
     final token = await _loadUserToken(); // Mendapatkan token

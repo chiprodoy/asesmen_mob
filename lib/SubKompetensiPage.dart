@@ -11,6 +11,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 import 'DownloadPDFPage.dart';
+import 'LoginPage.dart';
 
 class SubKompetensiPage extends StatefulWidget {
   final String? kompetensiUUID;
@@ -39,6 +40,20 @@ class _SubKompetensiPageState extends State<SubKompetensiPage> {
     super.initState();
     fetchStudent();
     fetchDosen();
+    _isAuthenticated();
+  }
+
+  void _isAuthenticated() async {
+    const storage = FlutterSecureStorage();
+    final accessToken = await storage.read(key: 'access_token');
+    final role = await storage.read(key: 'role_name');
+
+    if (role != 'dosen') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+      );
+    }
   }
 
   void fetchStudent() async {
@@ -161,7 +176,6 @@ class _SubKompetensiPageState extends State<SubKompetensiPage> {
             child: Column(
               children: <Widget>[
                 Column(
-
                     // set the height of the header container as needed
                     children: <Widget>[
                       dropDownMahasiswa(),

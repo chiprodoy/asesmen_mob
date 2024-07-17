@@ -28,6 +28,20 @@ class _MahasiswaChangePasswordPageState
   @override
   void initState() {
     super.initState();
+    _isAuthenticated();
+  }
+
+  _isAuthenticated() async {
+    const storage = FlutterSecureStorage();
+    final accessToken = await storage.read(key: 'access_token');
+    final role = await storage.read(key: 'role_name');
+
+    if (role != 'mahasiswa') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+      );
+    }
   }
 
   _loadUserToken() async {

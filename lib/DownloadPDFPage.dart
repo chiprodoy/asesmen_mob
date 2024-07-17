@@ -44,9 +44,8 @@ class PDFViewerFromUrl extends State<DownloadPDFPage> {
           },
         );
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Download complete, file saved at $filePath')),
-        );
+        _dialogBuilder(
+            context, 'Download', 'Download complete, file saved at $filePath');
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -59,9 +58,7 @@ class PDFViewerFromUrl extends State<DownloadPDFPage> {
         });
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Permission denied')),
-      );
+      _dialogBuilder(context, 'Download', 'Permission Denied');
     }
   }
 
@@ -88,6 +85,30 @@ class PDFViewerFromUrl extends State<DownloadPDFPage> {
               child: Text(
                   'Nilai Tidak ditemukan, silahkan input nilai terlebih dahulu')),
         ));
+  }
+
+  Future<void> _dialogBuilder(BuildContext context, titleMsg, textMsg,
+      {String type = 'success'}) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(titleMsg),
+          content: Text(textMsg),
+          actions: <Widget>[
+            TextButton(
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(context).textTheme.labelLarge,
+              ),
+              child: const Text('Ok'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   showAlertDialog(BuildContext context, String title, String msg) {

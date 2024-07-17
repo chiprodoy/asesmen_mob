@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
+import 'LoginPage.dart';
+
 class CoursePage extends StatefulWidget {
   const CoursePage({super.key});
 
@@ -16,6 +18,25 @@ class CoursePage extends StatefulWidget {
 class _CoursePageState extends State<CoursePage> {
   Future<List<Course>> _coursesFuture = getCourses();
   var token = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _isAuthenticated();
+  }
+
+  _isAuthenticated() async {
+    const storage = FlutterSecureStorage();
+    final accessToken = await storage.read(key: 'access_token');
+    final role = await storage.read(key: 'role_name');
+
+    if (role != 'dosen') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+      );
+    }
+  }
 
   static Future<List<Course>> getCourses() async {
     final token = await _loadUserToken(); // Mendapatkan token

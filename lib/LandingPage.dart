@@ -9,8 +9,32 @@ import 'package:http/http.dart' as http;
 import 'ProfilPage.dart';
 import 'Services/Api.dart';
 
-class LandingPage extends StatelessWidget {
+class LandingPage extends StatefulWidget {
   const LandingPage({super.key});
+
+  @override
+  _LandingPageState createState() => _LandingPageState();
+}
+
+class _LandingPageState extends State<LandingPage> {
+  _isAuthenticated() async {
+    const storage = FlutterSecureStorage();
+    final accessToken = await storage.read(key: 'access_token');
+    final role = await storage.read(key: 'role_name');
+
+    if (role != 'dosen') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+      );
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _isAuthenticated();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -126,12 +150,10 @@ class LandingPage extends StatelessWidget {
   _logOut(BuildContext context) {
     _signOut(context);
     // Tindakan saat card import mahasiswa diklik
-
-    return Navigator.push(
+    return Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(
-        builder: (context) => const LoginPage(),
-      ),
+      MaterialPageRoute(builder: (context) => LoginPage()),
+      (Route<dynamic> route) => false,
     );
   }
 
@@ -165,7 +187,7 @@ class LandingPage extends StatelessWidget {
       showDialog(
         context: context,
         builder: (BuildContext context) {
-          return alert('Login gagal', 'Terjadi kesalahan: $error');
+          return alert('Logout gagal', 'Terjadi kesalahan: $error');
         },
       );
       // Menangani kesalahan yang mungkin terjadi

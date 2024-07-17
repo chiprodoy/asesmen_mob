@@ -8,6 +8,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 import 'DownloadPDFPage.dart';
+import 'LoginPage.dart';
 import 'StudentPage.dart';
 import 'SubKompetensiPage.dart';
 
@@ -54,6 +55,20 @@ class _MahasiswaAsesmenPageState extends State<MahasiswaAsesmenPage> {
   initState() {
     super.initState();
     _readUserFromStorage();
+    _isAuthenticated();
+  }
+
+  _isAuthenticated() async {
+    const storage = FlutterSecureStorage();
+    final accessToken = await storage.read(key: 'access_token');
+    final role = await storage.read(key: 'role_name');
+
+    if (role != 'mahasiswa') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+      );
+    }
   }
 
   _readUserFromStorage() async {

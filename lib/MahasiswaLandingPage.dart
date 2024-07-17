@@ -7,8 +7,32 @@ import 'package:asesmen_ners/StudentPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class MahasiswaLandingPage extends StatelessWidget {
+class MahasiswaLandingPage extends StatefulWidget {
   const MahasiswaLandingPage({super.key});
+
+  @override
+  _MahasiswaLandingPageState createState() => _MahasiswaLandingPageState();
+}
+
+class _MahasiswaLandingPageState extends State<MahasiswaLandingPage> {
+  @override
+  void initState() {
+    super.initState();
+    _isAuthenticated();
+  }
+
+  _isAuthenticated() async {
+    const storage = FlutterSecureStorage();
+    final accessToken = await storage.read(key: 'access_token');
+    final role = await storage.read(key: 'role_name');
+
+    if (role != 'mahasiswa') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,11 +103,10 @@ class MahasiswaLandingPage extends StatelessWidget {
                         const storage = FlutterSecureStorage();
                         storage.deleteAll();
                         // Tindakan saat card import mahasiswa diklik
-                        Navigator.push(
+                        Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => const LoginPage(),
-                          ),
+                          MaterialPageRoute(builder: (context) => LoginPage()),
+                          (Route<dynamic> route) => false,
                         );
                       }),
                     ],
