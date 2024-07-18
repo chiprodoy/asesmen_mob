@@ -218,15 +218,17 @@ class _SubKompetensiPageState extends State<SubKompetensiPage> {
                         minimumSize: const Size.fromHeight(
                             40), // fromHeight use double.infinity as width and 40 is the height
                       ),
-                      onPressed: () =>
-
-                          // Respond to button press
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute<dynamic>(
-                                  builder: (_) => DownloadPDFPage(
-                                      url:
-                                          '${Api.host}/asesmen_report/$_selectedMhs/${widget.asesmenID!}'))),
+                      onPressed: () {
+                        print(
+                            '${Api.host}/asesmen_report/$_selectedMhs/${widget.asesmenID!}');
+                        // Respond to button press
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute<dynamic>(
+                                builder: (_) => DownloadPDFPage(
+                                    url:
+                                        '${Api.host}/asesmen_report/$_selectedMhs/${widget.asesmenID!}')));
+                      },
                       child: const Text('Simpan'),
                     )
                   ],

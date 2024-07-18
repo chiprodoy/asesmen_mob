@@ -109,6 +109,7 @@ class _MahasiswaCoursePageState extends State<MahasiswaCoursePage> {
         return ListTile(
           title: Text(course.namaMataKuliah!),
           onTap: () {
+            print('${Api.host}/asesmen_summary_report/${userID}/${course.id!}');
             Navigator.push(
               context,
               MaterialPageRoute(
