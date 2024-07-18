@@ -16,8 +16,12 @@ import 'LoginPage.dart';
 class SubKompetensiPage extends StatefulWidget {
   final String? kompetensiUUID;
   final int? asesmenID;
+  final String? sumberNilai1;
+  final String? sumberNilai2;
+
   // final Kompetensi kompetensi;
-  const SubKompetensiPage(this.kompetensiUUID, this.asesmenID);
+  const SubKompetensiPage(this.kompetensiUUID, this.asesmenID,
+      this.sumberNilai1, this.sumberNilai2);
 
   @override
   _SubKompetensiPageState createState() => _SubKompetensiPageState();
@@ -167,6 +171,7 @@ class _SubKompetensiPageState extends State<SubKompetensiPage> {
 
   @override
   Widget build(BuildContext context) {
+    //print('sumber nilai1: ${widget.sumberNilai1}');
     return Scaffold(
         appBar: AppBar(
           title: const Text('Pilih SubKompetensi'),
@@ -179,8 +184,10 @@ class _SubKompetensiPageState extends State<SubKompetensiPage> {
                     // set the height of the header container as needed
                     children: <Widget>[
                       dropDownMahasiswa(),
-                      inputTextPembimbingAkademik(),
-                      inputTextPembimbingLapangan(),
+                      inputTextPembimbingAkademik(
+                          labelText: widget.sumberNilai1),
+                      inputTextPembimbingLapangan(
+                          labelText: widget.sumberNilai2),
                       //Text(widget.kompetensi.namaKompetensi!)
                     ]),
                 Expanded(
@@ -246,24 +253,24 @@ class _SubKompetensiPageState extends State<SubKompetensiPage> {
     );
   }
 
-  Widget inputTextPembimbingAkademik() {
+  Widget inputTextPembimbingAkademik({labelText}) {
     return TextField(
         onChanged: (value) async {
           _pembimbingAkademik = value;
         },
-        decoration: const InputDecoration(
-          hintText: 'Pembimbing Akademik',
+        decoration: InputDecoration(
+          hintText: labelText,
           border: OutlineInputBorder(),
         ));
   }
 
-  Widget inputTextPembimbingLapangan() {
+  Widget inputTextPembimbingLapangan({labelText}) {
     return TextField(
         onChanged: (value) async {
           _pembimbingLapangan = value;
         },
-        decoration: const InputDecoration(
-          hintText: 'Pembimbing Lapangan',
+        decoration: InputDecoration(
+          hintText: labelText,
           border: OutlineInputBorder(),
         ));
   }

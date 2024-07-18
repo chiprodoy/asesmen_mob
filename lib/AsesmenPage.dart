@@ -59,6 +59,7 @@ class _AsesmenPageState extends State<AsesmenPage> {
 
     if (response.statusCode == 200) {
       var res = json.decode(response.body);
+      print('asesmen: ${res['data']}');
       print(res['data']);
       final List data = res['data'];
       return data.map((e) => Asesmen.fromJson(e)).toList();
@@ -102,14 +103,15 @@ class _AsesmenPageState extends State<AsesmenPage> {
       itemCount: asesmens.length,
       itemBuilder: (context, index) {
         final asesmen = asesmens[index];
+        print('sumber nilai1: ${asesmen.sumberNilai1}');
         return ListTile(
           title: Text(asesmen.namaAsesmen!),
           onTap: () {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) =>
-                      SubKompetensiPage(asesmen.uuid, asesmen.id)),
+                  builder: (context) => SubKompetensiPage(asesmen.uuid,
+                      asesmen.id, asesmen.sumberNilai1, asesmen.sumberNilai2)),
             );
           }, // Handle your onTap here.
         );
@@ -118,37 +120,6 @@ class _AsesmenPageState extends State<AsesmenPage> {
         // <-- SEE HERE
         return const Divider();
       },
-    );
-  }
-
-  Widget _buildAsesmenCard(
-      String title, String description, BuildContext context) {
-    return Card(
-      elevation: 5,
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const StudentPage()),
-          );
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(15),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-              Text(description),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
