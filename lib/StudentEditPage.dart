@@ -2,6 +2,7 @@ import 'dart:convert';
 //import 'package:asesmen_ners/KompetensiPage.dar';
 import 'package:asesmen_ners/Model/Mahasiswa.dart';
 import 'package:asesmen_ners/Services/Api.dart';
+import 'package:asesmen_ners/SideMenu.dart';
 import 'package:asesmen_ners/StudentPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -15,6 +16,7 @@ class StudentEditPage extends StatefulWidget {
   final String telepon;
   final String email;
   final id;
+  final String uuid;
 
   const StudentEditPage(
       {super.key,
@@ -22,7 +24,8 @@ class StudentEditPage extends StatefulWidget {
       required this.npm,
       required this.nama,
       required this.email,
-      required this.telepon});
+      required this.telepon,
+      required this.uuid});
 
   // final Kompetensi kompetensi;
 
@@ -38,6 +41,8 @@ class _StudentEditPageState extends State<StudentEditPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _teleponController = TextEditingController();
   final TextEditingController _userID = TextEditingController();
+
+  bool _isLoading = true;
 
   late Future<List<Mahasiswa>> _mahasiswaFuture;
   List<dynamic>? _studentDatas; //edited line
@@ -68,10 +73,93 @@ class _StudentEditPageState extends State<StudentEditPage> {
     }
   }
 
+  _loadUserToken() async {
+    const storage = FlutterSecureStorage();
+    final accessToken = await storage.read(key: 'access_token');
+    return accessToken;
+  }
+
+  Future<void> _deleteMahasiswaData() async {
+    setState(() {
+      _isLoading = true;
+    });
+    print('deletemahasiswadata');
+
+    final token = await _loadUserToken(); // Mendapatkan token
+
+    // Header untuk permintaan HTTP
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    final response = await http.delete(
+      Uri.parse('${Api.host}/mahasiswa/${widget.uuid}'),
+      headers: headers,
+    );
+    print(response.body);
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (response.statusCode == 200) {
+      _mahasiswaDeletedDialogBuilder(
+          context, 'Delete Profile', 'Berhasil menghapus profile',
+          type: 'success');
+    } else {
+      _mahasiswaDeletedDialogBuilder(
+          context, 'Updating Profile', 'Gagal menghapus profile',
+          type: 'failed');
+    }
+  }
+
+  Future<void> _mahasiswaDeletedDialogBuilder(
+      BuildContext context, titleMsg, textMsg,
+      {String type = 'success'}) {
+    return showDialog<void>(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(titleMsg),
+          content: Text(textMsg),
+          actions: <Widget>[
+            TextButton(
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(context).textTheme.labelLarge,
+              ),
+              child: const Text('Ok'),
+              onPressed: () {
+                if (type == 'success') {
+                  Navigator.of(context, rootNavigator: true).pop();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const StudentPage()),
+                  ).then((value) => setState(() {}));
+
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //       builder: (context) => const LandingPage()),
+                  // );
+                } else {
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: const Text('Mahasiswa')),
+        endDrawer: SideMenu(),
         body: Form(
           key: _formKey, // Associate the form key with this Form widget
           child: Padding(
@@ -133,6 +221,18 @@ class _StudentEditPageState extends State<StudentEditPage> {
                   onPressed:
                       _submitForm, // Call the _submitForm function when the button is pressed
                   child: Text('Submit'), // Text on the button
+                ),
+                SizedBox(height: 20.0),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                  ),
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      _deleteMahasiswaData();
+                    }
+                  },
+                  child: Text('Hapus Mahasiswa'),
                 ),
               ],
             ),

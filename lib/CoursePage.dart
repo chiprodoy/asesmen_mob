@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:asesmen_ners/AsesmenPage.dart';
 import 'package:asesmen_ners/Model/Course.dart';
 import 'package:asesmen_ners/Services/Api.dart';
+import 'package:asesmen_ners/SideMenu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -72,6 +73,7 @@ class _CoursePageState extends State<CoursePage> {
         appBar: AppBar(
           title: const Text('Pilih Mata Kuliah'),
         ),
+        endDrawer: SideMenu(),
         body: Container(
           padding: const EdgeInsets.all(20.0),
           child: FutureBuilder<List<Course>>(

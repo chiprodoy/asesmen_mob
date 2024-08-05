@@ -5,6 +5,7 @@ import 'package:asesmen_ners/Model/Kompetensi.dart';
 import 'package:asesmen_ners/Model/NilaiSubKompetensi.dart';
 import 'package:asesmen_ners/Model/SubKompetensi.dart';
 import 'package:asesmen_ners/Services/Api.dart';
+import 'package:asesmen_ners/SideMenu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -176,6 +177,7 @@ class _SubKompetensiPageState extends State<SubKompetensiPage> {
         appBar: AppBar(
           title: const Text('Pilih SubKompetensi'),
         ),
+        endDrawer: SideMenu(),
         body: Container(
             padding: const EdgeInsets.all(20.0),
             child: Column(

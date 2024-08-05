@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:asesmen_ners/LoginPage.dart';
 import 'package:asesmen_ners/Model/Mahasiswa.dart';
 import 'package:asesmen_ners/Services/Api.dart';
+import 'package:asesmen_ners/SideMenu.dart';
 import 'package:asesmen_ners/StudentCreatePage.dart';
 import 'package:asesmen_ners/StudentEditPage.dart';
 import 'package:flutter/material.dart';
@@ -75,6 +76,7 @@ class _StudentPageState extends State<StudentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: const Text('Mahasiswa')),
+        endDrawer: SideMenu(),
         body: Container(
             padding: const EdgeInsets.all(20.0),
             child: Column(
@@ -143,6 +145,7 @@ class _StudentPageState extends State<StudentPage> {
               MaterialPageRoute(
                 builder: (context) => StudentEditPage(
                   id: mahasiswa.id.toString(),
+                  uuid: mahasiswa.uuid!,
                   npm: mahasiswa.npm!,
                   nama: mahasiswa.nama!,
                   telepon: mahasiswa.telepon!,

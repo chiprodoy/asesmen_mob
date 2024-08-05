@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:asesmen_ners/MahasiswaSubKompetensiPage.dart';
 import 'package:asesmen_ners/Model/Asesmen.dart';
 import 'package:asesmen_ners/Services/Api.dart';
+import 'package:asesmen_ners/SideMenu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -88,6 +89,7 @@ class _MahasiswaAsesmenPageState extends State<MahasiswaAsesmenPage> {
         appBar: AppBar(
           title: const Text('Pilih Asesmen'),
         ),
+        endDrawer: SideMenu(),
         body: Container(
           padding: const EdgeInsets.all(20.0),
           child: FutureBuilder<List<Asesmen>>(

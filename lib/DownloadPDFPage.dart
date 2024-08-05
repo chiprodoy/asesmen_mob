@@ -1,3 +1,4 @@
+import 'package:asesmen_ners/SideMenu.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cached_pdfview/flutter_cached_pdfview.dart';
@@ -78,6 +79,7 @@ class PDFViewerFromUrl extends State<DownloadPDFPage> {
             ),
           ],
         ),
+        endDrawer: SideMenu(),
         body: const PDF(swipeHorizontal: true).fromUrl(
           widget.url,
           placeholder: (double progress) => Center(child: Text('$progress %')),

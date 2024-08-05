@@ -122,6 +122,83 @@ class _MahasiswaProfilPageState extends State<MahasiswaProfilPage> {
     }
   }
 
+  Future<void> _deleteProfileData() async {
+    setState(() {
+      _isLoading = true;
+    });
+    print('deleteprofiledata');
+
+    final token = await _loadUserToken(); // Mendapatkan token
+
+    // Header untuk permintaan HTTP
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    final response = await http.delete(
+      Uri.parse('${Api.host}/profile'),
+      headers: headers,
+    );
+    print(response.body);
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (response.statusCode == 200) {
+      const storage = FlutterSecureStorage();
+      await storage.deleteAll();
+
+      _profileDeletedDialogBuilder(
+          context, 'Delete Profile', 'Berhasil menghapus profile',
+          type: 'success');
+    } else {
+      _profileDeletedDialogBuilder(
+          context, 'Updating Profile', 'Gagal menghapus profile',
+          type: 'failed');
+    }
+  }
+
+  Future<void> _profileDeletedDialogBuilder(
+      BuildContext context, titleMsg, textMsg,
+      {String type = 'success'}) {
+    return showDialog<void>(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(titleMsg),
+          content: Text(textMsg),
+          actions: <Widget>[
+            TextButton(
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(context).textTheme.labelLarge,
+              ),
+              child: const Text('Ok'),
+              onPressed: () {
+                if (type == 'success') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginPage()),
+                  );
+
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //       builder: (context) => const LandingPage()),
+                  // );
+                } else {
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<void> _dialogBuilder(BuildContext context, titleMsg, textMsg,
       {String type = 'success'}) {
     return showDialog<void>(
@@ -219,6 +296,18 @@ class _MahasiswaProfilPageState extends State<MahasiswaProfilPage> {
                         }
                       },
                       child: Text('Save'),
+                    ),
+                    SizedBox(height: 20.0),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                      ),
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          _deleteProfileData();
+                        }
+                      },
+                      child: Text('Hapus Profile'),
                     ),
                   ],
                 ),

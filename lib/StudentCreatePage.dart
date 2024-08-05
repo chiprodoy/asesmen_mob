@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:asesmen_ners/LoginPage.dart';
 import 'package:asesmen_ners/Model/Mahasiswa.dart';
 import 'package:asesmen_ners/Services/Api.dart';
+import 'package:asesmen_ners/SideMenu.dart';
 import 'package:asesmen_ners/StudentPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -82,6 +83,7 @@ class _StudentCreatePageState extends State<StudentCreatePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: const Text('Mahasiswa')),
+        endDrawer: SideMenu(),
         body: Form(
           key: _formKey, // Associate the form key with this Form widget
           child: Padding(
