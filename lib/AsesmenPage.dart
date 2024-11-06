@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
+import 'AsesmenPilihMahasiswa.dart';
+import 'DownloadPDFPage.dart';
 import 'LoginPage.dart';
 import 'StudentPage.dart';
 import 'SubKompetensiPage.dart';
@@ -105,9 +107,31 @@ class _AsesmenPageState extends State<AsesmenPage> {
       itemCount: asesmens.length,
       itemBuilder: (context, index) {
         final asesmen = asesmens[index];
-        print('sumber nilai1: ${asesmen.sumberNilai1}');
+        //print('sumber nilai1: ${asesmen.uuid}');
         return ListTile(
           title: Text(asesmen.namaAsesmen!),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: Icon(Icons.remove_red_eye, color: Colors.blue),
+                onPressed: () {
+                  // TODO: Implementasikan fungsi preview
+                  previewItem(asesmen.id);
+
+                  // Contoh navigasi ke halaman preview atau tampilkan dialog.
+                },
+              ),
+              // IconButton(
+              //   icon: Icon(Icons.download, color: Colors.blue),
+              //   onPressed: () {
+              //     // TODO: Implementasikan fungsi download
+              //     downloadItem(asesmen.uuid);
+              //     // Panggil fungsi untuk mengunduh data terkait item.
+              //   },
+              // ),
+            ],
+          ),
           onTap: () {
             Navigator.push(
               context,
@@ -123,5 +147,20 @@ class _AsesmenPageState extends State<AsesmenPage> {
         return const Divider();
       },
     );
+  }
+
+  void previewItem(int? itemUUID) {
+    // Implementasikan fungsi untuk menampilkan pratinjau item
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AsesmenPilihMahasiswaPage(itemName: itemUUID),
+      ),
+    );
+  }
+
+  void downloadItem(String? itemUUID) {
+    // Implementasikan fungsi untuk mengunduh item
+    print("Mengunduh $itemUUID");
   }
 }

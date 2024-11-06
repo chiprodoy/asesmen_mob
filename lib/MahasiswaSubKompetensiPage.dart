@@ -11,6 +11,7 @@ import 'package:http/http.dart' as http;
 
 import 'DownloadPDFPage.dart';
 import 'LoginPage.dart';
+import 'MahasiswaSideMenu.dart';
 
 class MahasiswaSubKompetensiPage extends StatefulWidget {
   final String? kompetensiUUID;
@@ -145,7 +146,7 @@ class _MahasiswaSubKompetensiPageState
         appBar: AppBar(
           title: const Text('Pilih SubKompetensi'),
         ),
-        endDrawer: SideMenu(),
+        endDrawer: MahasiswaSideMenu(),
         body: Container(
             padding: const EdgeInsets.all(20.0),
             child: Column(

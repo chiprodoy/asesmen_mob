@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 
 import 'DownloadPDFPage.dart';
 import 'LoginPage.dart';
+import 'MahasiswaSideMenu.dart';
 
 class MahasiswaCoursePage extends StatefulWidget {
   const MahasiswaCoursePage({super.key});
@@ -83,7 +84,7 @@ class _MahasiswaCoursePageState extends State<MahasiswaCoursePage> {
         appBar: AppBar(
           title: const Text('Pillih Mata Kuliah'),
         ),
-        endDrawer: SideMenu(),
+        endDrawer: MahasiswaSideMenu(),
         body: Container(
           padding: const EdgeInsets.all(20.0),
           child: FutureBuilder<List<Course>>(
@@ -110,8 +111,18 @@ class _MahasiswaCoursePageState extends State<MahasiswaCoursePage> {
 
         return ListTile(
           title: Text(course.namaMataKuliah!),
+          trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+            IconButton(
+                icon: Icon(Icons.remove_red_eye, color: Colors.blue),
+                onPressed: () {
+                  // TODO: Implementasikan fungsi preview
+                  previewItem(courses[index].uuid);
+
+                  // Contoh navigasi ke halaman preview atau tampilkan dialog.
+                })
+          ]),
           onTap: () {
-            print('${Api.host}/asesmen_summary_report/${userID}/${course.id!}');
+            // print('${Api.host}/asesmen_summary_report/${userID}/${course.id!}');
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -126,6 +137,13 @@ class _MahasiswaCoursePageState extends State<MahasiswaCoursePage> {
         // <-- SEE HERE
         return const Divider();
       },
+    );
+  }
+
+  void previewItem(courseUUID) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => MahasiswaAsesmenPage(courseUUID)),
     );
   }
 }

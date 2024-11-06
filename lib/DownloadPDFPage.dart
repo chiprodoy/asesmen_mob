@@ -1,5 +1,6 @@
 import 'package:asesmen_ners/SideMenu.dart';
 import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cached_pdfview/flutter_cached_pdfview.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -24,6 +25,16 @@ class PDFViewerFromUrl extends State<DownloadPDFPage> {
 
   Future<void> _downloadFile(String url) async {
     final status = await Permission.storage.request();
+    String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
+
+    if (selectedDirectory == null) {
+      // Pengguna membatalkan pemilihan direktori
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Pilih lokasi penyimpanan dibatalkan")),
+      );
+      return;
+    }
+
     if (status.isGranted) {
       setState(() {
         _isLoading = true;
@@ -31,8 +42,7 @@ class PDFViewerFromUrl extends State<DownloadPDFPage> {
 
       try {
         final dio = Dio();
-        final dir = await getExternalStorageDirectory();
-        final filePath = '${dir?.path}/report.pdf';
+        final filePath = '$selectedDirectory/report.pdf';
         await dio.download(
           url,
           filePath,

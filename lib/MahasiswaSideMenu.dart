@@ -1,16 +1,16 @@
 import 'package:asesmen_ners/LandingPage.dart';
+import 'package:asesmen_ners/MahasiswaCoursePage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-import 'CoursePage.dart';
-import 'DosenChangePasswordPage.dart';
 import 'LoginPage.dart';
-import 'ProfilPage.dart';
+import 'MahasiswaChangePasswordPage.dart';
+import 'MahasiswaLandingPage.dart';
+import 'MahasiswaProfilPage.dart';
 import 'Services/Api.dart';
-import 'StudentPage.dart';
 import 'package:http/http.dart' as http;
 
-class SideMenu extends StatelessWidget {
+class MahasiswaSideMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -35,7 +35,7 @@ class SideMenu extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => LandingPage(),
+              builder: (context) => MahasiswaLandingPage(),
             ),
           );
           // Navigate to Home
@@ -43,25 +43,12 @@ class SideMenu extends StatelessWidget {
       ),
       ListTile(
         leading: Icon(Icons.rate_review),
-        title: Text('Form Penilaian'),
+        title: Text('Hasil Penilaian'),
         onTap: () {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const CoursePage(),
-            ),
-          );
-          // Navigate to Home
-        },
-      ),
-      ListTile(
-        leading: Icon(Icons.people),
-        title: Text('Mahasiswa'),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const StudentPage(),
+              builder: (context) => const MahasiswaCoursePage(),
             ),
           );
           // Navigate to Home
@@ -74,7 +61,7 @@ class SideMenu extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ProfilPage(),
+              builder: (context) => MahasiswaProfilPage(),
             ),
           );
           // Navigate to Profile
@@ -87,7 +74,7 @@ class SideMenu extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => DosenChangePasswordPage(),
+              builder: (context) => MahasiswaChangePasswordPage(),
             ),
           );
           // Navigate to Settings
